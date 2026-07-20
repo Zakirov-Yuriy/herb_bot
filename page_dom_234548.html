@@ -1,0 +1,1177 @@
+<html><head>
+<title>Легенда: Наследие Драконов — бесплатная онлайн игра | Браузерная MMORPG онлайн игра про Драконов — одна из старейших бесплатных ролевых online игр. Скачать и играть в лучшую многопользовательскую RPG браузерную игру онлайн бесплатно.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="style/main.css?ux=1780582749">
+<link rel="stylesheet" type="text/css" href="style/solitaire.css?ux=1780582749">
+<link rel="stylesheet" type="text/css" href="style/opt.css?ux=1559206498">
+<link rel="stylesheet" type="text/css" href="images/locale/ru/alt.css">
+<script type="text/javascript" src="js/jquery.js?ux=1384945292"></script>
+<script type="text/javascript" src="js/jquery-ui.js?ux=1384945292"></script>
+<script type="text/javaScript" src="js/jquery.popup.min.js?ux=1384945292"></script>
+<script type="text/javascript" src="js/json2.js?ux=1432195705"></script>
+<script type="text/javascript" src="js/jstorage.js?ux=1771935789" language="javaScript"></script>
+<script type="text/javascript" src="js/common.js?ux=1782897416"></script><script type="text/javascript" src="/js/base64.js"></script><script src="/js/console_log.js"></script>
+<script type="text/javascript" src="js/solitaire.js?ux=1780582748"></script>
+<script type="text/javascript" src="js/cookie.js?ux=1384945292"></script>
+<script type="text/javascript" src="js/ac_runactivecontent.js?ux=1422035967"></script>
+<script type="text/javascript" src="js/flash_detect.js?ux=1571907944"></script>
+<script language="javaScript" src="js/simple_alt.js?ux=1735203302"></script>
+<script type="text/javascript" src="js/jquery.chstyler.js?ux=1411630765"></script>
+<script language="javaScript" src="js/canvas/pixi.js?ux=1547715160"></script>
+<script language="javaScript" src="js/canvas/pixi-filters.js?ux=1535616402"></script>
+<script language="javaScript" src="js/canvas/canvas.all.js?ux=1781523544"></script>
+<script type="text/javascript">
+$(function() {
+	});
+_top().dwar = {};
+_top().myId = '20153957';
+_top().myNick = '-Alcatraz-VeliS-';
+_top().myKind = '1';
+_top().locale_path = 'images/locale/ru/';
+
+_top().dialogEvent = [];
+_top().dialogShow = [];
+_top().dialogNeed = [];
+_top().dialogOn = true;
+_top().showNow = 0;
+
+_top().cht_height = 30;
+_top().cht_step = 5;
+_top().obj = null;
+
+_top().iframe = 'main';
+_top().iframe_locked = false;
+
+_top().items_alt = {};
+_top().js_popup = false;
+_top().money_type_info = {"gold":{"alt":"Золотой","picture":"m_game3.gif"},"silver":{"alt":"Серебряный","picture":"m_game2.gif"},"bronze":{"alt":"Медный","picture":"m_game1.gif"},"brilliante":{"alt":"Бриллиант","picture":"m_dmd.gif","url":"\/info\/info\/?category_id=304"},"work":{"alt":"Энергия","picture":"work.gif"},"ruby":{"alt":"Изумруд","picture":"m_izum.gif","url":"\/info\/info\/?category_id=304"},"achievement":{"alt":"Достижения","picture":"achievement_icon.gif"}};
+topDwar({"backpack":{"actions":["use","equip","drop","extract","repair","sell","remove","info","add","perp","unequip"]},"areastore":{"sell_limit":30,"sell_used_coef":0.01000000000000000020816681711721685132943093776702880859375,"sell_new_coef":0.1000000000000000055511151231257827021181583404541015625},"quailty_info":[{"id":0,"title":"серый","color":"#666666","disenchant_bonus_id":165,"disenchant_bonus_id_6_10":28205,"disenchant_bonus_id_11_15":28210,"disenchant_bonus_id_16_20":23494},{"id":1,"title":"зеленый","color":"#339900","disenchant_bonus_id":166,"disenchant_bonus_id_6_10":28206,"disenchant_bonus_id_11_15":28211,"disenchant_bonus_id_16_20":23495},{"id":2,"title":"синий","color":"#3300ff","disenchant_bonus_id":167,"disenchant_bonus_id_6_10":28207,"disenchant_bonus_id_11_15":28212,"disenchant_bonus_id_16_20":23496},{"id":3,"title":"фиолетовый","color":"#990099","disenchant_bonus_id":168,"disenchant_bonus_id_6_10":28208,"disenchant_bonus_id_11_15":28213,"disenchant_bonus_id_16_20":23497},{"id":4,"title":"красный","color":"#ff0000","disenchant_bonus_id":169,"disenchant_bonus_id_6_10":28209,"disenchant_bonus_id_11_15":28214,"disenchant_bonus_id_16_20":23498},{"id":5,"title":"бирюзовый","color":"#016e71","disenchant_bonus_id":0,"disenchant_bonus_id_6_10":0,"disenchant_bonus_id_11_15":0,"disenchant_bonus_id_16_20":0},{"id":6,"title":"оранжевый","color":"#f55e27","disenchant_bonus_id":0,"disenchant_bonus_id_6_10":0,"disenchant_bonus_id_11_15":0,"disenchant_bonus_id_16_20":0},{"id":7,"title":"алый","color":"#f400a1","disenchant_bonus_id":0,"disenchant_bonus_id_6_10":0,"disenchant_bonus_id_11_15":0,"disenchant_bonus_id_16_20":0}],"lang":{"clan":{"management":{"notSaveWarn":"Есть несохраненные изменения в полномочиях.","confirmChangeGradePerm":"Вы уверены, что хотите изменить полномочия для следующего звания?","confirmChangeGradePerms":"Вы уверены, что хотите изменить полномочия для следующих званий?","confirmChangeGradeName":"Вы уверены, что хотите изменить название для следующего звания?","confirmChangeGradeNames":"Вы уверены, что хотите изменить названия для следующих званий?"}}}});
+_top().servers = {"1":{"url":"https:\/\/w1.dwar.ru\/","title":"ФЭО-Прайм"},"2":{"url":"https:\/\/w2.dwar.ru\/","title":"ФЭО-Минор"},"101":{"url":"https:\/\/battle.dwar.ru\/","title":"RU-BATTLE"}};
+_top().server_id = 1;
+_top().locale_file = 'images%2Fdata%2Flocale%2Fru%2Fflash_translate.xml';
+_top().TRANSLATE = {"amount_format":"%d шт","reset_close":"очистить\/закрыть","use_mobile":"Использует мобильный клиент"};
+_top().mobile_client_url = '/info/pictures/mobile/DwarMobile-80361.apk';
+
+_top().js_debug = false;
+
+_top().backpack_groups = {"1":"2","2":"2","3":"2","4":"2","5":"2","6":"2","7":"2","10":"2","12":"2","17":"2","18":"2","19":"2","20":"2","21":"2","22":"1","23":"1","25":"2","27":"2","30":"2","31":"2","32":"5","33":"1","34":"4","39":"2","41":"2","42":"2","44":"2","47":"2","48":"1","51":"2","61":"1","62":"2","65":"1","66":"4","71":"5","72":"1","76":"2","77":"2","84":"1","96":"2","98":"1","99":"5","100":"4","102":"4","103":"1","104":"1","105":"1","116":"2","118":"2","119":"4","120":"2","121":"2","122":"2","123":"2","124":"6","125":"6","126":"2","127":"2","128":"2","131":"2","133":"6","135":"1","136":"2","137":"2","140":"4","141":"2","142":"2","143":"2","144":"2","145":"2","154":"6","155":"6","156":"2","157":"2","158":"4","161":"2","164":"2","165":"6","166":"1","167":"1","168":"1","169":"1","170":"1","171":"2","174":"2","175":"1","177":"2","178":"1","179":"2","181":"6","182":"6","183":"2","184":"2","185":"2","186":"2","187":"1","188":"2","189":"1","190":"1","191":"2","192":"4","193":"2","194":"2","195":"2","205":"4","213":"4","215":"2","216":"1","217":"1","218":"1","220":"4","221":"2","222":"4","223":"2","224":"2"};
+_top().backpack_group_sub = {"1":{"kinds":[],"types":{"13":1,"7":2,"33":3,"50":3,"51":3,"52":3,"168":4,"176":5}},"2":{"kinds":{"161":3},"types":{"167":1,"39":4,"177":4,"18":5,"3":6,"92":6,"97":6},"quality":{"5":2}},"3":{"kinds":{"32":4,"99":4},"types":{"169":1,"175":3,"201":5,"212":5},"profession":2},"4":{"kinds":[],"types":{"182":1,"183":2}},"6":{"kinds":{"154":1,"155":2,"133":3},"types":{"189":4}},"5":{"kinds":{"32":1,"99":1},"types":[]}};
+
+if (navigator.userAgent.indexOf('/AuthCheck') != -1)
+	alert('ClientAlert:AuthSuccess:zakcoyote@gmail.com');
+
+setCookie('flash_version', AC_GetSwfVer());
+</script>
+<script language="javascript" type="text/javascript">var art_alt = {};</script>
+<script type="text/javascript">_top().help_menu_array = [{"id":"3","txt":"Новости","click":"","href":"\/info\/news\/","style":"","picture":"\/images\/data\/help_menu\/info_news.png","time_start":null,"time_end":null},{"id":"1","txt":"Об игре","click":"","href":"\/info\/info\/","style":"","picture":"","time_start":null,"time_end":null},{"id":"2","txt":"Библиотека","click":"","href":"\/info\/library\/","style":"","picture":"\/images\/data\/help_menu\/info_library.png","time_start":null,"time_end":null},{"id":"4","txt":"Форум","click":"","href":"\/info\/forum\/","style":"","picture":"\/images\/data\/help_menu\/info_forum.png","time_start":null,"time_end":null},{"id":"5","txt":"Техническая поддержка","click":"","href":"https:\/\/support.astrum.top\/dwar_ru","style":"","picture":"\/images\/data\/help_menu\/info_support.png","time_start":null,"time_end":null},{"id":"1494","txt":"Социальные сети","click":"","href":"https:\/\/vk.com\/dwar_game","style":"","picture":"\/images\/data\/help_menu\/info_feather.gif","time_start":null,"time_end":null},{"id":"5086","txt":"Правила и законы мира Фэо","click":"","href":"\/info\/info\/?category_id=370","style":"","picture":"","time_start":null,"time_end":null},{"id":"524","txt":"Бестиарий монстров Фэо","click":"","href":"\/bot_info.php","style":"","picture":"\/images\/data\/help_menu\/info_compass.png","time_start":null,"time_end":null},{"id":"471","txt":"Менторы на дежурстве","click":"","href":"\/info\/info\/mentors.php","style":"","picture":"\/images\/data\/help_menu\/info_mentor.gif","time_start":null,"time_end":null},{"id":"5070","txt":"Новый зигзаг удачи","click":"","href":"\/info\/news\/?id=10497","style":"","picture":"","time_start":"1780322400","time_end":"1788264000"},{"id":"5071","txt":"Новый летний сезон боевых пропусков!","click":"","href":"\/info\/news\/?id=10496","style":"","picture":"","time_start":"1780322400","time_end":"1788210000"},{"id":"5072","txt":"Игра на экзотическое кольцо возвращается!","click":"","href":"\/info\/news\/?id=10499","style":"","picture":"","time_start":"1780408860","time_end":"1785758400"},{"id":"5073","txt":"Эхо горного короля","click":"","href":"\/info\/news\/?id=10498","style":"","picture":"","time_start":"1780408800","time_end":"1788264000"},{"id":"5105","txt":"Клановые войны. Лига Драконов. Состав лиг определен!","click":"","href":"\/info\/news\/?id=10531","style":"","picture":"","time_start":"1782118800","time_end":"1784538000"},{"id":"5124","txt":"Большой куш","click":"","href":"\/info\/news\/?id=10551","style":"","picture":"","time_start":"1782899100","time_end":"1785402000"},{"id":"5141","txt":"Турнир добытчиков","click":"","href":"\/info\/news\/?id=10574","style":"","picture":"","time_start":"1783962000","time_end":"1784566800"},{"id":"5145","txt":"Шепот в пустоте","click":"","href":"\/info\/news\/?id=10578","style":"","picture":"","time_start":"1784020800","time_end":"1788264000"},{"id":"5146","txt":"Июль - Летние удовольствия","click":"","href":"\/info\/news\/?id=10579","style":"","picture":"","time_start":"1784203200","time_end":"1784721600"},{"id":"5147","txt":"Летний сезон боевых пропусков продолжается!","click":"","href":"\/info\/news\/?id=10580","style":"","picture":"","time_start":"1784210400","time_end":"1786892400"},{"id":"5148","txt":"Невероятно выгодный размен!","click":"","href":"\/info\/news\/?id=10582","style":"","picture":"","time_start":"1784278800","time_end":"1784494800"},{"id":"5149","txt":"Магическая буря в Хаотичных битвах","click":"","href":"\/info\/news\/?id=10583","style":"","picture":"","time_start":"1784300400","time_end":"1784538000"}];</script>
+<script language="javascript" type="text/javascript">
+	var queuePopupWindows = [];
+</script>
+</head>
+<body marginheight="0" marginwidth="0" style="overflow: hidden;">
+<div id="systemConfirm_div" style="display: none;">
+	<div class="popup_global_container" style="width: 435px;">
+		<div class="popup-top-left">
+			<div class="popup-top-right">
+				<div class="popup-top-center">
+
+					<div class="popup_global_title" id="confirm_title"></div>
+
+				</div>
+			</div>
+			<div class="popup_global_close_btn" id="popup_global_close_btn"></div>
+		</div>
+
+		<div class="popup-left-center">
+			<div class="popup-right-center">
+
+				<div class="popup_global_content" style="padding: 20px; text-align: center;">
+
+					<div id="confirm_ms"></div>
+
+					<div style="padding: 0 11px;">
+						<div style="clear: both; margin-top: 10px;">
+							<b class="butt1 pointer"><b><input value="Ok" type="submit" onclick="if(document._submit)return false;document._submit=true;" style="width: 100px;" id="btnOk"></b></b>							<b class="butt1 pointer"><b><input value="Отмена" type="button" style="width: 100px;" id="btnCancel"></b></b>						</div>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+
+		<div class="popup-left-bottom">
+			<div class="popup-right-bottom">
+				<div class="popup-bottom-center"></div>
+			</div>
+		</div>
+
+	</div>
+</div>
+    <script>
+        if (!getCookie("skipFlashDetect")) {
+            FlashDetector.init({ swfPath : 'images/swf/', resolveHandler : function(result) {
+                    if (!result) {
+                        if (!getCookie("forceHtml5")) {
+                            setCookie("forceHtml5","1",{days : 30});
+                            window.location.reload();
+                        }
+                    } else {
+                        setCookie("forceHtml5","0", -1);
+                    }
+                }});
+        }
+    </script> 
+	<div id="exp_table" style="display: none;">
+		<table width="619" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr height="22">
+				<td width="20" align="right" valign="bottom" class="tbl-shp-sml lt"><b></b></td>
+				<td class="tbl-shp-sml tt" valign="top" align="center">
+					<table border="0" cellspacing="0" cellpadding="0">
+						<tbody><tr height="22">
+							<td width="27" class="tbl-usi-hdr lc"><b></b></td>
+							<td align="center" class="tbl-usi-hdr mbg">Таблица опыта</td>
+							<td width="27" class="tbl-usi-hdr rc"><b></b></td>
+						</tr>
+					</tbody></table>
+				</td>
+				<td width="20" align="left" valign="bottom" class="tbl-shp-sml rt"><b></b></td>
+			</tr>
+			<tr>
+				<td class="tbl-shp-sides ls">&nbsp;</td>
+				<td class="tbl-usi_bg" valign="top" align="center" style="padding: 10px 10px 16px">
+					<div style="max-height: 200px; overflow: auto;">
+						<table class="coll w100 p10h p4v brd2-all">
+							<tbody>
+							<tr>
+								<td align="center" class="brd2-all">Уровень</td>
+								<td align="center" class="brd2-all">Опыт</td>
+								<td align="center" class="brd2-all">Описание</td>
+							</tr>
+                                                <tr>
+                                <td align="center" class="brd2-all"><b>1</b></td>
+                                <td align="center" class="brd2-all"><b>0</b></td>
+                                <td class="brd2-all"><p>Возможность носить поножи и кирасу.</p></td>
+                            </tr>
+                                                        <tr class="bg_l">
+                                <td align="center" class="brd2-all"><b>2</b></td>
+                                <td align="center" class="brd2-all"><b>720</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=67" onclick="showArtifactInfo(false,67);return false;">Сумеречный Дайто</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=68" onclick="showArtifactInfo(false,68);return false;">Сумеречный Вакидзаси</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=86" onclick="showArtifactInfo(false,86);return false;">Кастет «Мамонт»</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=87" onclick="showArtifactInfo(false,87);return false;">Щит «Мамонт»</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=102" onclick="showArtifactInfo(false,102);return false;">Топор палача</a><br>
+<b>•</b> Новые товары в магазине:<br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=53" onclick="showArtifactInfo(false,53);return false;">Великий эликсир мощи</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=56" onclick="showArtifactInfo(false,56);return false;">Великий эликсир жизни</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=99" onclick="showArtifactInfo(false,99);return false;">Великий эликсир гиганта</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=145" onclick="showArtifactInfo(false,145);return false;">Великий Вампирик</a><br>
+<a class="artifact_info b macros_artifact_quality0" href="/artifact_info.php?artikul_id=167" onclick="showArtifactInfo(false,167);return false;">Свиток исцеления</a><br>
+<a class="artifact_info b macros_artifact_quality0" href="/artifact_info.php?artikul_id=161" onclick="showArtifactInfo(false,161);return false;">Свиток отравления</a><br>
+<b>•</b> Новый супер удар - <strong><a href="/info/info/index.php?obj=cat&amp;id=29&amp;page=5" target="_blank">«Великая Сила Волка»</a></strong>; <br>
+<b>•</b> Возможность <strong><a href="/info/library/?category_id=253&amp;page=11" target="_blank">торговать</a></strong>.</p></td>
+                            </tr>
+                                                        <tr>
+                                <td align="center" class="brd2-all"><b>3</b></td>
+                                <td align="center" class="brd2-all"><b>4500</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=69" onclick="showArtifactInfo(false,69);return false;">Сумеречная кольчуга</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=70" onclick="showArtifactInfo(false,70);return false;">Сумеречные сапоги</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=88" onclick="showArtifactInfo(false,88);return false;">Кольчуга «Мамонт»</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=89" onclick="showArtifactInfo(false,89);return false;">Сапоги «Мамонт»</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=103" onclick="showArtifactInfo(false,103);return false;">Рубаха палача</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=106" onclick="showArtifactInfo(false,106);return false;">Сапоги палача</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=9708" onclick="showArtifactInfo(false,9708);return false;">Лук «Тропа ветра»</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=9709" onclick="showArtifactInfo(false,9709);return false;">Лук «Сила ветра»</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=9710" onclick="showArtifactInfo(false,9710);return false;">Лук «Гнев ветра»</a><br>
+а также оружие и доспехи из <strong><a href="/info/library/?id=1220" target="_blank">синих</a></strong> комплектов;<br>
+<b>•</b> Новые товары в магазине:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=170" onclick="showArtifactInfo(false,170);return false;">Свиток исцеления</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=727" onclick="showArtifactInfo(false,727);return false;">Свиток исцеления</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=1314" onclick="showArtifactInfo(false,1314);return false;">Свиток исцеления</a><br>
+<a class="artifact_info b macros_artifact_quality0" href="/artifact_info.php?artikul_id=845" onclick="showArtifactInfo(false,845);return false;">Малый эликсир ветра</a><br>
+<a class="artifact_info b macros_artifact_quality0" href="/artifact_info.php?artikul_id=851" onclick="showArtifactInfo(false,851);return false;">Свиток «каменная кожа»</a><br>
+<a class="artifact_info b macros_artifact_quality0" href="/artifact_info.php?artikul_id=847" onclick="showArtifactInfo(false,847);return false;">Малый амулет разрушения</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=221" onclick="showArtifactInfo(false,221);return false;">Амулет воскрешения</a><br>
+<b>•</b> Новый супер удар - <strong><a href="/info/info/index.php?obj=cat&amp;id=29&amp;page=5" target="_blank">«Жажда Крови»</a></strong>; <br>
+<b>•</b> Новые репутации - <strong><a href="/info/library/index.php?obj=cat&amp;id=58" target="_blank">Искатели реликтов</a></strong> до 1000, <strong><a href="/info/library/index.php?obj=cat&amp;id=57" target="_blank">Подземные рыцари</a></strong> до 1000, <strong><a href="/info/library/index.php?obj=cat&amp;id=65" target="_blank">Охотники на нежить</a></strong> до 500;<br>
+<b>•</b> Профессии: <strong><a href="/info/info/?category_id=53&amp;page=3" target="_blank">Геолог</a></strong>/<strong><a href="/info/info/?category_id=53&amp;page=2" target="_blank">Травник</a></strong>, <strong><a href="/info/info/?category_id=53&amp;page=4" target="_blank">Алхимик</a></strong>, <strong><a href="/info/info/?category_id=53&amp;page=5" target="_blank">Ювелир</a></strong>, <strong><a href="/info/info/?category_id=53&amp;page=6" target="_blank">Рыбак</a></strong>, <strong><a href="/info/info/?category_id=53&amp;page=7" target="_blank">Колдун</a></strong>, <strong><a href="/info/info/?category_id=53&amp;page=9" target="_blank">Взломщик</a></strong>;  <br>
+<b>•</b> <strong><a href="/artifact_info.php?artikul_id=10412" target="_blank">Эльтский куб</a></strong>;  <br>
+<b>•</b> Возможность основать <strong><a href="/info/library/?category_id=257" target="_blank">клан</a></strong>;  <br>
+<b>•</b> <strong><a href="/info/library/?category_id=242&amp;page=4" target="_blank">Поля битв</a></strong>;  <br>
+<b>•</b> <strong><a href="/info/library/?category_id=242&amp;page=6" target="_blank">Хаотичные битвы</a></strong>;  <br>
+<b>•</b> Инстансы - <strong><a href="/info/library/index.php?obj=cat&amp;id=116" target="_blank">Заброшенный дом</a></strong>,  <strong><a href="/info/library/index.php?obj=cat&amp;id=122" target="_blank">Эльфийское святилище</a></strong>. <br></p></td>
+                            </tr>
+                                                        <tr class="bg_l">
+                                <td align="center" class="brd2-all"><b>4</b></td>
+                                <td align="center" class="brd2-all"><b>21564</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=71" onclick="showArtifactInfo(false,71);return false;">Сумеречные наплечники</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=72" onclick="showArtifactInfo(false,72);return false;">Сумеречные перчатки</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=90" onclick="showArtifactInfo(false,90);return false;">Наплечники «Мамонт»</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=91" onclick="showArtifactInfo(false,91);return false;">Рукавицы «Мамонт»</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=107" onclick="showArtifactInfo(false,107);return false;">Наплечники палача</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=108" onclick="showArtifactInfo(false,108);return false;">Наручи палача</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=140" onclick="showArtifactInfo(false,140);return false;">Наплечники «Северный Ветер»</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=141" onclick="showArtifactInfo(false,141);return false;">Перчатки «Северный Ветер»</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=128" onclick="showArtifactInfo(false,128);return false;">Наплечники «Убийца Гигантов»</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=129" onclick="showArtifactInfo(false,129);return false;">Перчатки «Убийца Гигантов»</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=116" onclick="showArtifactInfo(false,116);return false;">Наплечники Гнева</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=117" onclick="showArtifactInfo(false,117);return false;">Наручи Гнева</a><br>
+<b>•</b> Новый супер удар - <strong><a href="/info/info/index.php?obj=cat&amp;id=29&amp;page=5" target="_blank">«Ярость Пантеры»</a></strong>; <br>
+<b>•</b> Новые репутации - <strong><a href="/info/library/index.php?obj=cat&amp;id=58" target="_blank">Искатели реликтов</a></strong> до 2000, <strong><a href="/info/library/index.php?obj=cat&amp;id=57" target="_blank">Подземные рыцари</a></strong> до 3000, <strong><a href="/info/library/index.php?obj=cat&amp;id=65" target="_blank">Охотники за нежитью</a></strong> до 1500, <strong><a href="/info/library/index.php?obj=cat&amp;id=68" target="_blank">Наемники</a></strong> до 1000, <strong><a href="/info/library/index.php?obj=cat&amp;id=78" target="_blank">Джаггернауты</a></strong> до 500; <br>
+<b>•</b> <strong><a href="/info/library/index.php?obj=cat&amp;id=64" target="_blank">Ездовые животные</a></strong>; <br>
+<b>•</b> Профессия <strong><a href="/info/info/?category_id=53&amp;page=10" target="_blank">целитель</a></strong>; <br>
+<b>•</b> Новые инстансы - <strong><a href="/info/library/index.php?obj=cat&amp;id=123" target="_blank">Логово Крэтсов</a></strong>,  <strong><a href="/info/library/index.php?obj=cat&amp;id=124" target="_blank">Улей Зигредов</a></strong>. <br></p></td>
+                            </tr>
+                                                        <tr>
+                                <td align="center" class="brd2-all"><b>5</b></td>
+                                <td align="center" class="brd2-all"><b>90864</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=73" onclick="showArtifactInfo(false,73);return false;">Сумеречная маска</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=92" onclick="showArtifactInfo(false,92);return false;">Шлем «Мамонт»</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=109" onclick="showArtifactInfo(false,109);return false;">Маска палача</a><br>
+<a class="artifact_info b macros_artifact_quality0" href="/artifact_info.php?artikul_id=269" onclick="showArtifactInfo(false,269);return false;">Пояс странника</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1600" onclick="showArtifactInfo(false,1600);return false;">Пояс воеводы</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=142" onclick="showArtifactInfo(false,142);return false;">Шлем «Северный Ветер»</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=130" onclick="showArtifactInfo(false,130);return false;">Шлем «Убийца Гигантов»</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=118" onclick="showArtifactInfo(false,118);return false;">Шлем Гнева</a><br>
+<b>•</b> Новый супер удар - <strong><a href="/info/info/index.php?obj=cat&amp;id=29&amp;page=5" target="_blank">«Атака Змеи»</a></strong>; <br>
+<b>•</b> Новые репутации - <strong><a href="/info/library/index.php?obj=cat&amp;id=59" target="_blank">Вершители Зла</a>/<a href="/info/library/index.php?obj=cat&amp;id=60" target="_blank">Братство Добродетели</a></strong> до 3000, <strong><a href="/info/library/index.php?obj=cat&amp;id=61" target="_blank">Борцы с Хаосом</a></strong> до 3000, <strong><a href="/info/library/index.php?obj=cat&amp;id=58" target="_blank">Искатели реликтов</a></strong> до 3000, <strong><a href="/info/library/index.php?obj=cat&amp;id=68" target="_blank">Наемники</a></strong> до 3000, <strong><a href="/info/library/index.php?obj=cat&amp;id=78" target="_blank">Джаггернауты</a></strong> до 3000 и <strong><a href="/info/library/index.php?obj=cat&amp;id=100" target="_blank">Заклинатели духов</a></strong>;<br>
+<b>•</b> <strong><a href="/info/library/index.php?obj=cat&amp;id=113" target="_blank">Поместье</a></strong>. <br>
+<b>•</b> Новый инстанс - <strong><a href="/info/library/?category_id=220&amp;page=8" target="_blank">Обитель вечного льда</a></strong>.  <br></p></td>
+                            </tr>
+                                                        <tr class="bg_l">
+                                <td align="center" class="brd2-all"><b>6</b></td>
+                                <td align="center" class="brd2-all"><b>198864</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=194" onclick="showArtifactInfo(false,194);return false;">Поножи единорога</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=196" onclick="showArtifactInfo(false,196);return false;">Броня единорога</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=205" onclick="showArtifactInfo(false,205);return false;">Поножи мрачной скалы</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=207" onclick="showArtifactInfo(false,207);return false;">Броня мрачной скалы</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=214" onclick="showArtifactInfo(false,214);return false;">Поножи возмездия</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=216" onclick="showArtifactInfo(false,216);return false;">Кираса возмездия</a><br>
+а также доспехи из  <strong><a href="/info/library/?id=1220" target="_blank">синих</a></strong> комплектов;<br>
+<b>•</b> Новый супер удар - <strong><a href="/info/info/index.php?obj=cat&amp;id=29&amp;page=5" target="_blank">«Великая Жажда Крови»</a></strong>; <br>
+<b>•</b> Новая репутация - <strong><a href="/info/library/index.php?obj=cat&amp;id=85" target="_blank">Флаундины</a></strong>; <br>
+<b>•</b> Профессия <strong><a href="/info/info/?category_id=53&amp;page=8" target="_blank">Палач</a></strong>; <br>
+<b>•</b> Новые инстансы - <strong><a href="/info/library/index.php?obj=cat&amp;id=126" target="_blank">Грот Гурральдия</a></strong>,  <strong><a href="/info/library/index.php?obj=cat&amp;id=128" target="_blank">Затонувший корабль</a></strong>, <strong><a href="/info/library/index.php?obj=cat&amp;id=129" target="_blank">Заброшенная кузница</a></strong>, <strong><a href="/info/library/index.php?obj=cat&amp;id=130" target="_blank">Чертоги короля Магиша</a></strong>. <br></p></td>
+                            </tr>
+                                                        <tr>
+                                <td align="center" class="brd2-all"><b>7</b></td>
+                                <td align="center" class="brd2-all"><b>401364</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=202" onclick="showArtifactInfo(false,202);return false;">Меч единорога</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=203" onclick="showArtifactInfo(false,203);return false;">Стилет единорога</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=211" onclick="showArtifactInfo(false,211);return false;">Кастет мрачной скалы</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=212" onclick="showArtifactInfo(false,212);return false;">Щит мрачной скалы</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=220" onclick="showArtifactInfo(false,220);return false;">Молот возмездия</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=9721" onclick="showArtifactInfo(false,9721);return false;">Лук «Огненная вспышка»</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=9741" onclick="showArtifactInfo(false,9741);return false;">Лук «Небесная мощь»</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=9742" onclick="showArtifactInfo(false,9742);return false;">Лук «Сумеречный свет»</a><br>
+а также доспехи из  <strong><a href="/info/library/?id=1220" target="_blank">синих</a></strong> комплектов;<br>
+<b>•</b> Новый супер удар - <strong><a href="/info/info/index.php?obj=cat&amp;id=29&amp;page=5" target="_blank">«Ярость Тигра»</a></strong>; <br>
+<b>•</b> Новые репутации - <strong><a href="/info/library/index.php?obj=cat&amp;id=92" target="_blank">Богиня Аладея</a></strong>/<strong><a href="/info/library/index.php?obj=cat&amp;id=93" target="_blank">Бог мертвых и проклятых</a></strong>, <strong><a href="/info/library/index.php?obj=cat&amp;id=94" target="_blank">Великие Драконы</a></strong>, <strong><a href="/info/library/?category_id=241&amp;page=18" target="_blank">Участник Великих битв</a></strong>; <br>
+• Залы <strong><a href="/info/info/index.php?obj=cat&amp;id=68" target="_blank">Таллаара</a></strong>.</p></td>
+                            </tr>
+                                                        <tr class="bg_l">
+                                <td align="center" class="brd2-all"><b>8</b></td>
+                                <td align="center" class="brd2-all"><b>806364</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=195" onclick="showArtifactInfo(false,195);return false;">Сапоги единорога</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=198" onclick="showArtifactInfo(false,198);return false;">Кольчуга единорога</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=204" onclick="showArtifactInfo(false,204);return false;">Сапоги мрачной скалы</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=208" onclick="showArtifactInfo(false,208);return false;">Кольчуга мрачной скалы</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=213" onclick="showArtifactInfo(false,213);return false;">Сапоги возмездия</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=217" onclick="showArtifactInfo(false,217);return false;">Кольчуга возмездия</a><br>
+а также доспехи из  <strong><a href="/info/library/?id=1220" target="_blank">синих</a></strong> комплектов;<br>
+<b>•</b> Новый супер удар - <strong><a href="/info/info/index.php?obj=cat&amp;id=29&amp;page=5" target="_blank">«Смертельная Атака Змеи»</a></strong>; <br>
+<b>•</b> Новый инстанс - <strong><a href="/info/library/index.php?obj=cat&amp;id=127" target="_blank">Болото Богельфа</a></strong>.  <br></p></td>
+                            </tr>
+                                                        <tr>
+                                <td align="center" class="brd2-all"><b>9</b></td>
+                                <td align="center" class="brd2-all"><b>1301364</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=193" onclick="showArtifactInfo(false,193);return false;">Наплечники единорога</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=199" onclick="showArtifactInfo(false,199);return false;">Наручи единорога</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=206" onclick="showArtifactInfo(false,206);return false;">Наплечники мрачной скалы</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=209" onclick="showArtifactInfo(false,209);return false;">Браслеты мрачной скалы</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=215" onclick="showArtifactInfo(false,215);return false;">Наплечники возмездия</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=218" onclick="showArtifactInfo(false,218);return false;">Браслеты возмездия</a><br>
+а также доспехи из  <strong><strong><a href="/info/library/?id=1220" target="_blank">синих</a></strong></strong> комплектов;<br>
+<b>•</b> Новый супер удар - <strong><a href="/info/info/index.php?obj=cat&amp;id=29&amp;page=5" target="_blank">«Удар Медведя»</a></strong>; <br>
+<b>•</b> Новая репутация - <strong><a href="/info/library/?category_id=241&amp;page=22" target="_blank">Кладоискатели</a></strong>; <br>
+<b>•</b> Новый инстанс - <strong><a href="/info/library/index.php?obj=cat&amp;id=131" target="_blank">Нагорье скорпионов</a></strong>.  <br></p></td>
+                            </tr>
+                                                        <tr class="bg_l">
+                                <td align="center" class="brd2-all"><b>10</b></td>
+                                <td align="center" class="brd2-all"><b>2100000</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=201" onclick="showArtifactInfo(false,201);return false;">Шлем единорога</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=210" onclick="showArtifactInfo(false,210);return false;">Шлем мрачной скалы</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=219" onclick="showArtifactInfo(false,219);return false;">Шлем возмездия</a><br>
+а также доспехи из  <strong><strong><a href="/info/library/?id=1220" target="_blank">синих</a></strong></strong> комплектов;<br>
+<b>•</b> Новый супер удар - <strong><a href="/info/info/index.php?obj=cat&amp;id=29&amp;page=5" target="_blank">Гнев Дракона»</a></strong>. <br></p></td>
+                            </tr>
+                                                        <tr>
+                                <td align="center" class="brd2-all"><b>11</b></td>
+                                <td align="center" class="brd2-all"><b>3700000</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1668" onclick="showArtifactInfo(false,1668);return false;">Поножи покоя</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1670" onclick="showArtifactInfo(false,1670);return false;">Нагрудник покоя</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1679" onclick="showArtifactInfo(false,1679);return false;">Поножи грифона</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1681" onclick="showArtifactInfo(false,1681);return false;">Нагрудник грифона</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1690" onclick="showArtifactInfo(false,1690);return false;">Поножи берсеркера</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1692" onclick="showArtifactInfo(false,1692);return false;">Кираса берсеркера</a><br>
+<b>•</b> Новые товары в магазине:<br>
+<a class="artifact_info b macros_artifact_quality0" href="/artifact_info.php?artikul_id=1729" onclick="showArtifactInfo(false,1729);return false;">Малый эликсир маны</a><br>
+<a class="artifact_info b macros_artifact_quality0" href="/artifact_info.php?artikul_id=2249" onclick="showArtifactInfo(false,2249);return false;">Малый эликсир духа</a><br>
+<a class="artifact_info b macros_artifact_quality0" href="/artifact_info.php?artikul_id=2289" onclick="showArtifactInfo(false,2289);return false;">Малый эликсир гнева</a><br>
+<a class="artifact_info b macros_artifact_quality0" href="/artifact_info.php?artikul_id=2290" onclick="showArtifactInfo(false,2290);return false;">Малый эликсир Атши</a><br>
+<a class="artifact_info b macros_artifact_quality0" href="/artifact_info.php?artikul_id=2291" onclick="showArtifactInfo(false,2291);return false;">Малый эликсир мудрости</a><br>
+<a class="artifact_info b macros_artifact_quality0" href="/artifact_info.php?artikul_id=3930" onclick="showArtifactInfo(false,3930);return false;">Свиток маны</a><br>
+<a class="artifact_info b macros_artifact_quality0" href="/artifact_info.php?artikul_id=9205" onclick="showArtifactInfo(false,9205);return false;">Эликсир «Дар земли»</a><br>
+<a class="artifact_info b macros_artifact_quality0" href="/artifact_info.php?artikul_id=9206" onclick="showArtifactInfo(false,9206);return false;">Свиток «Дар земли»</a><br>
+<a class="artifact_info b macros_artifact_quality0" href="/artifact_info.php?artikul_id=9209" onclick="showArtifactInfo(false,9209);return false;">Талисман «Дар земли»</a><br>
+а также доспехи из  <strong><a href="/info/library/?id=1220" target="_blank">синих</a></strong> комплектов;<br>
+<b>•</b> <strong><a href="/info/info/?category_id=29&amp;page=13" target="_blank">Магия</a></strong>; <br>
+<b>•</b> Новые репутации <strong><a href="/info/library/index.php?obj=cat&amp;id=86" target="_blank">Эльдивы</a>/<a href="/info/library/index.php?obj=cat&amp;id=87" target="_blank">Крофдоры</a></strong>, <strong><a href="/info/library/?category_id=241&amp;page=27" target="_blank">Нимфея</a>/<a href="/info/library/?category_id=241&amp;page=28" target="_blank">Сильфея</a></strong>, <strong><a href="/info/library/index.php?obj=cat&amp;id=108" target="_blank">Ловцы теней</a></strong>, <strong><a href="/info/library/?category_id=241&amp;page=29" target="_blank">Хранители магии</a></strong>, <strong><a href="/info/library/index.php?obj=cat&amp;id=107" target="_blank">Покровители питомцев</a></strong>; <br>
+<b>•</b> <strong><a href="/info/library/?category_id=242&amp;page=8" target="_blank">Поля битв равных</a></strong>;  <br>
+<b>•</b> <strong><a href="/info/library/?id=1597" target="_blank">Битвы в разломе</a></strong>;  <br>
+<b>•</b> Новые инстансы - <strong>Сокровищница Ивмуар</strong>, <strong><a href="/info/library/index.php?obj=cat&amp;id=132" target="_blank">Крепость Изгнанников</a></strong>, <strong><a href="/info/library/index.php?obj=cat&amp;id=134" target="_blank">Обитель видений</a></strong>, <strong><a href="/info/library/index.php?obj=cat&amp;id=133" target="_blank">Склеп Умертвия</a></strong>. <br></p></td>
+                            </tr>
+                                                        <tr class="bg_l">
+                                <td align="center" class="brd2-all"><b>12</b></td>
+                                <td align="center" class="brd2-all"><b>5200000</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1674" onclick="showArtifactInfo(false,1674);return false;">Меч покоя</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1675" onclick="showArtifactInfo(false,1675);return false;">Щит покоя</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1685" onclick="showArtifactInfo(false,1685);return false;">Меч грифона</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1686" onclick="showArtifactInfo(false,1686);return false;">Кинжал грифона</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1696" onclick="showArtifactInfo(false,1696);return false;">Топор берсеркера</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=9752" onclick="showArtifactInfo(false,9752);return false;">Лук «Стон горы»</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=9764" onclick="showArtifactInfo(false,9764);return false;">Лук «Ускользающая тень»</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=9766" onclick="showArtifactInfo(false,9766);return false;">Лук «Тихий свист»</a><br>
+<b>•</b> Новые товары в магазине:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=2460" onclick="showArtifactInfo(false,2460);return false;">Эликсир мудрости</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=2461" onclick="showArtifactInfo(false,2461);return false;">Эликсир гнева</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=2462" onclick="showArtifactInfo(false,2462);return false;">Эликсир Атши</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=9269" onclick="showArtifactInfo(false,9269);return false;">Эликсир «Милость земли»</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=9271" onclick="showArtifactInfo(false,9271);return false;">Талисман «Милость земли»</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=9270" onclick="showArtifactInfo(false,9270);return false;">Свиток «Милость земли»</a><br>
+а также доспехи из  <strong><a href="/info/library/?id=1220" target="_blank">синих</a></strong> комплектов;<br>
+<b>•</b> Новые уровни <strong><a href="/info/library/?category_id=253&amp;page=13" target="_blank">заклинаний</a></strong>; <br>
+<b>•</b> Новые инстансы - <strong><a href="/info/library/index.php?obj=cat&amp;id=135" target="_blank">Земли забвения</a></strong>, <strong><a href="/info/library/index.php?obj=cat&amp;id=136" target="_blank">Зачарованный лес</a></strong>. <br></p></td>
+                            </tr>
+                                                        <tr>
+                                <td align="center" class="brd2-all"><b>13</b></td>
+                                <td align="center" class="brd2-all"><b>8000000</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1667" onclick="showArtifactInfo(false,1667);return false;">Сапоги покоя</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1671" onclick="showArtifactInfo(false,1671);return false;">Кольчуга покоя</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1680" onclick="showArtifactInfo(false,1680);return false;">Сапоги грифона</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1682" onclick="showArtifactInfo(false,1682);return false;">Кольчуга грифона</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1693" onclick="showArtifactInfo(false,1693);return false;">Кольчуга берсеркера</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1689" onclick="showArtifactInfo(false,1689);return false;">Сапоги берсеркера</a><br>
+<b>•</b> Новые товары в магазине:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=3559" onclick="showArtifactInfo(false,3559);return false;">Эликсир духа</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=4013" onclick="showArtifactInfo(false,4013);return false;">Эликсир маны</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=7589" onclick="showArtifactInfo(false,7589);return false;">Свиток маны</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=9272" onclick="showArtifactInfo(false,9272);return false;">Эликсир «Благо земли»</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=9273" onclick="showArtifactInfo(false,9273);return false;">Свиток «Благо земли»</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=9274" onclick="showArtifactInfo(false,9274);return false;">Талисман «Благо земли»</a><br>
+а также доспехи из  <strong><a href="/info/library/?id=1220" target="_blank">синих</a></strong> комплектов;<br>
+<b>•</b> Новая репутация - <strong><a href="/info/library/?id=1856" target="_blank">Астральные охотники</a></strong>; <br>
+<b>•</b> Новые уровни <strong><a href="/info/info/index.php?obj=cat&amp;id=29&amp;page=13" target="_blank">заклинаний</a></strong>. <br></p></td>
+                            </tr>
+                                                        <tr class="bg_l">
+                                <td align="center" class="brd2-all"><b>14</b></td>
+                                <td align="center" class="brd2-all"><b>12000000</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1669" onclick="showArtifactInfo(false,1669);return false;">Наплечники покоя</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1672" onclick="showArtifactInfo(false,1672);return false;">Наручи покоя</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1678" onclick="showArtifactInfo(false,1678);return false;">Наплечники грифона</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1683" onclick="showArtifactInfo(false,1683);return false;">Наручи грифона</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1691" onclick="showArtifactInfo(false,1691);return false;">Наплечники берсеркера</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1694" onclick="showArtifactInfo(false,1694);return false;">Наручи берсеркера</a><br>
+<b>•</b> Новые товары в магазине:<br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=4028" onclick="showArtifactInfo(false,4028);return false;">Большой эликсир мудрости</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=4029" onclick="showArtifactInfo(false,4029);return false;">Большой эликсир гнева</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=4030" onclick="showArtifactInfo(false,4030);return false;">Большой эликсир Атши</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=9275" onclick="showArtifactInfo(false,9275);return false;">Эликсир «Энергия земли»</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=9276" onclick="showArtifactInfo(false,9276);return false;">Свиток «Энергия земли»</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=9277" onclick="showArtifactInfo(false,9277);return false;">Талисман «Энергия земли»</a><br>
+а также доспехи из  <strong><a href="/info/library/?id=1220" target="_blank">синих</a></strong> комплектов;<br>
+<b>•</b> Новая репутация - <strong><a href="/info/library/?category_id=241&amp;page=30" target="_blank">Борцы с Шиасс</a></strong>; <br>
+<b>•</b> Новые уровни <strong><a href="/info/info/index.php?obj=cat&amp;id=29&amp;page=13" target="_blank">заклинаний</a></strong>; <br>
+<b>•</b> Новый инстанс - <strong><a href="/info/library/?category_id=220&amp;page=20" target="_blank">Оскверненная заводь</a></strong>.  <br></p></td>
+                            </tr>
+                                                        <tr>
+                                <td align="center" class="brd2-all"><b>15</b></td>
+                                <td align="center" class="brd2-all"><b>17000000</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1673" onclick="showArtifactInfo(false,1673);return false;">Шлем покоя</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1684" onclick="showArtifactInfo(false,1684);return false;">Шлем грифона</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1695" onclick="showArtifactInfo(false,1695);return false;">Шлем берсеркера</a><br>
+<b>•</b> Новые товары в магазине:<br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=3560" onclick="showArtifactInfo(false,3560);return false;">Большой эликсир духа</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=6555" onclick="showArtifactInfo(false,6555);return false;">Большой эликсир маны</a><br>
+а также доспехи из  <strong><a href="/info/library/?id=1220" target="_blank">синих</a></strong> комплектов.<br></p></td>
+                            </tr>
+                                                        <tr class="bg_l">
+                                <td align="center" class="brd2-all"><b>16</b></td>
+                                <td align="center" class="brd2-all"><b>22100000</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10296" onclick="showArtifactInfo(false,10296);return false;">Поножи Бесстрашия</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10298" onclick="showArtifactInfo(false,10298);return false;">Нагрудник Бесстрашия</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10309" onclick="showArtifactInfo(false,10309);return false;">Нагрудник Следопыта</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10307" onclick="showArtifactInfo(false,10307);return false;">Поножи Следопыта</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10285" onclick="showArtifactInfo(false,10285);return false;">Поножи крушителя</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10287" onclick="showArtifactInfo(false,10287);return false;">Кираса крушителя</a><br>
+<b>•</b> Новые товары в магазине:<br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=9512" onclick="showArtifactInfo(false,9512);return false;">Великий эликсир Атши</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=9514" onclick="showArtifactInfo(false,9514);return false;">Великий эликсир мудрости</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=9516" onclick="showArtifactInfo(false,9516);return false;">Великий эликсир гнева</a><br>
+а также доспехи из  <strong><a href="/info/library/?id=1220" target="_blank">синих</a></strong> комплектов;<br>
+<b>•</b> Новые уровни <strong><a href="/info/info/index.php?obj=cat&amp;id=29&amp;page=13" target="_blank">заклинаний</a></strong>; <br>
+<b>•</b> Новые репутации <strong><a href="/info/library/index.php?obj=cat&amp;id=121" target="_blank">Расхитители гробниц</a></strong>, <strong><a href="/info/library/?category_id=241&amp;page=35" target="_blank">Последователи Зурхасса</a>/<a href="/info/library/?category_id=241&amp;page=36" target="_blank">Почитатели Миури Тао</a></strong>, <strong><a href="/info/library/?category_id=241&amp;page=32" target="_blank">Защитники Таильсимэ</a></strong>, <strong><a href="/info/library/?category_id=241&amp;page=33" target="_blank">Толкователи видений</a></strong>, <strong><a href="/info/library/?category_id=241&amp;page=34" target="_blank">Орден триад</a></strong>;<br>
+<b>•</b> <strong><a href="/info/library/?category_id=242&amp;page=7" target="_blank">Полуденные своды</a></strong>;  <br>
+<b>•</b> <strong><a href="/info/library/?category_id=242&amp;page=15" target="_blank">Горнило войны</a></strong>;  <br>
+<b>•</b> Новые инстансы - <strong><a href="/info/library/index.php?obj=cat&amp;id=125" target="_blank">Запретный город</a></strong>, <strong><a href="/info/library/?category_id=220&amp;page=23" target="_blank">Древо маурин</a></strong>, <strong><a href="/info/library/?category_id=220&amp;page=24" target="_blank">Роковое перепутье</a></strong>.</p></td>
+                            </tr>
+                                                        <tr>
+                                <td align="center" class="brd2-all"><b>17</b></td>
+                                <td align="center" class="brd2-all"><b>27300000</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10214" onclick="showArtifactInfo(false,10214);return false;">Меч Следопыта</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10215" onclick="showArtifactInfo(false,10215);return false;">Кинжал Следопыта</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10302" onclick="showArtifactInfo(false,10302);return false;">Кастет Бесстрашия</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10303" onclick="showArtifactInfo(false,10303);return false;">Щит Бесстрашия</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10216" onclick="showArtifactInfo(false,10216);return false;">Посох крушителя</a><br>
+<b>•</b> Новые товары в магазине:<br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=9506" onclick="showArtifactInfo(false,9506);return false;">Великий эликсир маны</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=9510" onclick="showArtifactInfo(false,9510);return false;">Великий эликсир духа</a><br>
+а также доспехи из  <strong><a href="/info/library/?id=1220" target="_blank">синих</a></strong> комплектов.<br></p></td>
+                            </tr>
+                                                        <tr class="bg_l">
+                                <td align="center" class="brd2-all"><b>18</b></td>
+                                <td align="center" class="brd2-all"><b>35300000</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10295" onclick="showArtifactInfo(false,10295);return false;">Сапоги Бесстрашия</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10299" onclick="showArtifactInfo(false,10299);return false;">Кольчуга Бесстрашия</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10308" onclick="showArtifactInfo(false,10308);return false;">Сапоги Следопыта</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10310" onclick="showArtifactInfo(false,10310);return false;">Кольчуга Следопыта</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10284" onclick="showArtifactInfo(false,10284);return false;">Сапоги крушителя</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10290" onclick="showArtifactInfo(false,10290);return false;">Кольчуга крушителя</a><br>
+а также доспехи из  <strong><a href="/info/library/?id=1220" target="_blank">синих</a></strong> комплектов;<br>
+<b>•</b> Новые уровни <strong><a href="/info/info/index.php?obj=cat&amp;id=29&amp;page=13" target="_blank">заклинаний</a></strong>. <br></p></td>
+                            </tr>
+                                                        <tr>
+                                <td align="center" class="brd2-all"><b>19</b></td>
+                                <td align="center" class="brd2-all"><b>43950000</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10297" onclick="showArtifactInfo(false,10297);return false;">Наплечники Бесстрашия</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10300" onclick="showArtifactInfo(false,10300);return false;">Наручи Бесстрашия</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10306" onclick="showArtifactInfo(false,10306);return false;">Наплечники Следопыта</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10311" onclick="showArtifactInfo(false,10311);return false;">Наручи Следопыта</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10286" onclick="showArtifactInfo(false,10286);return false;">Наплечники крушителя</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10288" onclick="showArtifactInfo(false,10288);return false;">Наручи крушителя</a><br>
+а также доспехи из  <strong><a href="/info/library/?id=1220" target="_blank">синих</a></strong> комплектов.<br></p></td>
+                            </tr>
+                                                        <tr class="bg_l">
+                                <td align="center" class="brd2-all"><b>20</b></td>
+                                <td align="center" class="brd2-all"><b>53450000</b></td>
+                                <td class="brd2-all"><p><b>•</b> Новая экипировка:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10301" onclick="showArtifactInfo(false,10301);return false;">Шлем Бесстрашия</a><br>
+ <a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10312" onclick="showArtifactInfo(false,10312);return false;">Шлем Следопыта</a><br>
+ <a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=10289" onclick="showArtifactInfo(false,10289);return false;">Шлем крушителя</a><br>
+а также доспехи из  <strong><a href="/info/library/?id=1220" target="_blank">синих</a></strong> комплектов.<br></p></td>
+                            </tr>
+                                                        </tbody>
+                        </table>
+                    </div>
+                    <br>
+
+										<div class="instance_timer_container green">
+						<div class="instance_timer_inner" style="width: 100%; margin: 0; left: 0;">Уровень 3: 3529 / 17064</div>
+						<div class="instance_timer_center" style="width: 100%; left: -79%"></div>
+						<div class="instance_timer_right"></div>
+						<div class="instance_timer_left"></div>
+					</div>
+					<p align="center">
+						<b class="butt1 pointer"><b><input value="Закрыть" type="button" onclick="confirmCenterDivClose();return false;"></b></b>					</p>
+				</td>
+				<td class="tbl-shp-sides rs">&nbsp;</td>
+			</tr>
+			<tr height="18">
+				<td width="20" align="right" valign="top" class="tbl-shp-sml lb"><b></b></td>
+				<td class="tbl-shp-sml bb" valign="top" align="center">&nbsp;   </td>
+				<td width="20" align="left" valign="top" class="tbl-shp-sml rb"><b></b></td>
+			</tr>
+		</tbody></table>
+	</div>
+
+	<div id="rank_table" style="display: none;">
+		<table width="619" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr height="22">
+				<td width="20" align="right" valign="bottom" class="tbl-shp-sml lt"><b></b></td>
+				<td class="tbl-shp-sml tt" valign="top" align="center">
+					<table border="0" cellspacing="0" cellpadding="0">
+						<tbody><tr height="22">
+							<td width="27" class="tbl-usi-hdr lc"><b></b></td>
+							<td align="center" class="tbl-usi-hdr mbg">Таблица званий</td>
+							<td width="27" class="tbl-usi-hdr rc"><b></b></td>
+						</tr>
+					</tbody></table>
+				</td>
+				<td width="20" align="left" valign="bottom" class="tbl-shp-sml rt"><b></b></td>
+			</tr>
+			<tr>
+				<td class="tbl-shp-sides ls">&nbsp;</td>
+				<td class="tbl-usi_bg" valign="top" align="center" style="padding: 10px 10px 16px">
+					<div style="max-height: 200px; overflow: auto;">
+						<table class="coll w100 p10h p4v brd2-all">
+							<tbody>
+							<tr>
+								<td align="center" class="brd2-all">Звание</td>
+								<td align="center" class="brd2-all">Доблесть</td>
+								<td width="308" align="center" class="brd2-all">Описание</td>
+							</tr>
+                                                    <tr>
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank0.gif" alt="" valign="absmiddle"> Рекрут</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>0</b></td>
+                                    <td valign="top" class="brd2-all"><p>Награда отсутствует</p></td>
+                                </tr>
+							                                <tr class="bg_l">
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank1.gif" alt="" valign="absmiddle"> Солдат</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>8000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1223" onclick="showArtifactInfo(false,1223);return false;">Амулет нападения - Зигред</a></p></td>
+                                </tr>
+							                                <tr>
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank2.gif" alt="" valign="absmiddle"> Боец</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>38000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality0" href="/artifact_info.php?artikul_id=1203" onclick="showArtifactInfo(false,1203);return false;">Руна скорости Сид</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1224" onclick="showArtifactInfo(false,1224);return false;">Амулет нападения - Пхадд</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14855" onclick="showArtifactInfo(false,14855);return false;">Оправа защиты Бьял I</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14720" onclick="showArtifactInfo(false,14720);return false;">Оправа отрицания I</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=15000" onclick="showArtifactInfo(false,15000);return false;">Оправа ограды Бьял I</a><br></p></td>
+                                </tr>
+							                                <tr class="bg_l">
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank3.gif" alt="" valign="absmiddle"> Воин</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>152000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1226" onclick="showArtifactInfo(false,1226);return false;">Амулет нападения - Тигр</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14975" onclick="showArtifactInfo(false,14975);return false;">Оправа защиты Инг I</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14741" onclick="showArtifactInfo(false,14741);return false;">Оправа отрицания II</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=15001" onclick="showArtifactInfo(false,15001);return false;">Оправа ограды Инг I</a></p></td>
+                                </tr>
+							                                <tr>
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank4.gif" alt="" valign="absmiddle"> Элитный воин</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>548000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1204" onclick="showArtifactInfo(false,1204);return false;">Руна скорости Сид</a><br>
+<a class="artifact_info b macros_artifact_quality1" href="/artifact_info.php?artikul_id=1178" onclick="showArtifactInfo(false,1178);return false;">Пояс воина</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14978" onclick="showArtifactInfo(false,14978);return false;">Оправа защиты Чуд I</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14742" onclick="showArtifactInfo(false,14742);return false;">Оправа отрицания III</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=15002" onclick="showArtifactInfo(false,15002);return false;">Оправа ограды Чуд I</a></p></td>
+                                </tr>
+							                                <tr class="bg_l">
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank5.gif" alt="" valign="absmiddle"> Чемпион</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>848000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14980" onclick="showArtifactInfo(false,14980);return false;">Оправа защиты Тиас I</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14743" onclick="showArtifactInfo(false,14743);return false;">Оправа отрицания IV</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=15003" onclick="showArtifactInfo(false,15003);return false;">Оправа ограды Тиас I</a></p></td>
+                                </tr>
+							                                <tr>
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank6.gif" alt="" valign="absmiddle"> Гладиатор</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>1248000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14981" onclick="showArtifactInfo(false,14981);return false;">Оправа защиты Бьял II</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14744" onclick="showArtifactInfo(false,14744);return false;">Оправа отрицания V</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=1205" onclick="showArtifactInfo(false,1205);return false;">Руна скорости Сид</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=15004" onclick="showArtifactInfo(false,15004);return false;">Оправа ограды Бьял II</a></p></td>
+                                </tr>
+							                                <tr class="bg_l">
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank7.gif" alt="" valign="absmiddle"> Полководец</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>1748000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14982" onclick="showArtifactInfo(false,14982);return false;">Оправа защиты Инг II</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14745" onclick="showArtifactInfo(false,14745);return false;">Оправа отрицания VI</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=15005" onclick="showArtifactInfo(false,15005);return false;">Оправа ограды Инг II</a></p></td>
+                                </tr>
+							                                <tr>
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank8.gif" alt="" valign="absmiddle"> Мастер войны</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>2348000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14983" onclick="showArtifactInfo(false,14983);return false;">Оправа защиты Чуд II</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14746" onclick="showArtifactInfo(false,14746);return false;">Оправа отрицания VII</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=1206" onclick="showArtifactInfo(false,1206);return false;">Руна скорости Сид</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=15006" onclick="showArtifactInfo(false,15006);return false;">Оправа ограды Чуд II</a></p></td>
+                                </tr>
+							                                <tr class="bg_l">
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank9.gif" alt="" valign="absmiddle"> Герой</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>3048000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14984" onclick="showArtifactInfo(false,14984);return false;">Оправа защиты Тиас II</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14747" onclick="showArtifactInfo(false,14747);return false;">Оправа отрицания VIII</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14753" onclick="showArtifactInfo(false,14753);return false;">Оправа пробивания I</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14783" onclick="showArtifactInfo(false,14783);return false;">Оправа отражения I</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=15007" onclick="showArtifactInfo(false,15007);return false;">Оправа ограды Тиас II</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=2661" onclick="showArtifactInfo(false,2661);return false;">Пояс героя</a></p></td>
+                                </tr>
+							                                <tr>
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank10.gif" alt="" valign="absmiddle"> Военный эксперт</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>3848000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14985" onclick="showArtifactInfo(false,14985);return false;">Оправа защиты Бьял III</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14748" onclick="showArtifactInfo(false,14748);return false;">Оправа отрицания IX</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14759" onclick="showArtifactInfo(false,14759);return false;">Оправа пробивания II</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14784" onclick="showArtifactInfo(false,14784);return false;">Оправа отражения II</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=15008" onclick="showArtifactInfo(false,15008);return false;">Оправа ограды Бьял III</a></p></td>
+                                </tr>
+							                                <tr class="bg_l">
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank11.gif" alt="" valign="absmiddle"> Магистр войны</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>5048000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14986" onclick="showArtifactInfo(false,14986);return false;">Оправа защиты Инг III</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14749" onclick="showArtifactInfo(false,14749);return false;">Оправа отрицания X</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14760" onclick="showArtifactInfo(false,14760);return false;">Оправа пробивания III</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14785" onclick="showArtifactInfo(false,14785);return false;">Оправа отражения III</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=15009" onclick="showArtifactInfo(false,15009);return false;">Оправа ограды Инг III</a></p></td>
+                                </tr>
+							                                <tr>
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank12.gif" alt="" valign="absmiddle"> Вершитель</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>6848000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14987" onclick="showArtifactInfo(false,14987);return false;">Оправа защиты Чуд III</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14750" onclick="showArtifactInfo(false,14750);return false;">Оправа отрицания XI</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14761" onclick="showArtifactInfo(false,14761);return false;">Оправа пробивания IV</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14786" onclick="showArtifactInfo(false,14786);return false;">Оправа отражения IV</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=15010" onclick="showArtifactInfo(false,15010);return false;">Оправа ограды Чуд III</a></p></td>
+                                </tr>
+							                                <tr class="bg_l">
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank13.gif" alt="" valign="absmiddle"> Высший магистр</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>9548000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14988" onclick="showArtifactInfo(false,14988);return false;">Оправа защиты Тиас III</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14751" onclick="showArtifactInfo(false,14751);return false;">Оправа отрицания XII</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14762" onclick="showArtifactInfo(false,14762);return false;">Оправа пробивания V</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14787" onclick="showArtifactInfo(false,14787);return false;">Оправа отражения V</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=15011" onclick="showArtifactInfo(false,15011);return false;">Оправа ограды Тиас III</a></p></td>
+                                </tr>
+							                                <tr>
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank14.gif" alt="" valign="absmiddle"> Повелитель</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>13598000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14989" onclick="showArtifactInfo(false,14989);return false;">Оправа защиты Бьял IV</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=15426" onclick="showArtifactInfo(false,15426);return false;">Оправа отрицания XIII</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14763" onclick="showArtifactInfo(false,14763);return false;">Оправа пробивания VI</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14788" onclick="showArtifactInfo(false,14788);return false;">Оправа отражения VI</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=15012" onclick="showArtifactInfo(false,15012);return false;">Оправа ограды Бьял IV</a></p></td>
+                                </tr>
+							                                <tr class="bg_l">
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank15.gif" alt="" valign="absmiddle"> Легендарный завоеватель</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>20000000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14995" onclick="showArtifactInfo(false,14995);return false;">Оправа защиты Инг IV</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=15013" onclick="showArtifactInfo(false,15013);return false;">Оправа ограды Инг IV</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=15427" onclick="showArtifactInfo(false,15427);return false;">Оправа отрицания XIV</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=24870" onclick="showArtifactInfo(false,24870);return false;">Оправа отражения VII</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=24860" onclick="showArtifactInfo(false,24860);return false;">Оправа пробивания VII</a></p></td>
+                                </tr>
+							                                <tr>
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank16.gif" alt="" valign="absmiddle"> Властелин боя</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>29500000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14996" onclick="showArtifactInfo(false,14996);return false;">Оправа защиты Чуд IV</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=15014" onclick="showArtifactInfo(false,15014);return false;">Оправа ограды Чуд IV</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=15428" onclick="showArtifactInfo(false,15428);return false;">Оправа отрицания XV</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=24871" onclick="showArtifactInfo(false,24871);return false;">Оправа отражения VIII</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=24861" onclick="showArtifactInfo(false,24861);return false;">Оправа пробивания VIII</a></p></td>
+                                </tr>
+							                                <tr class="bg_l">
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank17.gif" alt="" valign="absmiddle"> Победоносец</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>43500000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14997" onclick="showArtifactInfo(false,14997);return false;">Оправа защиты Тиас IV</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=15015" onclick="showArtifactInfo(false,15015);return false;">Оправа ограды Тиас IV</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=15429" onclick="showArtifactInfo(false,15429);return false;">Оправа отрицания XVI</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=24872" onclick="showArtifactInfo(false,24872);return false;">Оправа отражения IX</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=24862" onclick="showArtifactInfo(false,24862);return false;">Оправа пробивания IX</a></p></td>
+                                </tr>
+							                                <tr>
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank18.gif" alt="" valign="absmiddle"> Триумфатор </b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>65000000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14998" onclick="showArtifactInfo(false,14998);return false;">Оправа защиты Бьял V</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=15016" onclick="showArtifactInfo(false,15016);return false;">Оправа ограды Бьял V</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=15430" onclick="showArtifactInfo(false,15430);return false;">Оправа отрицания XVII</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=24873" onclick="showArtifactInfo(false,24873);return false;">Оправа отражения X</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=24863" onclick="showArtifactInfo(false,24863);return false;">Оправа пробивания X</a></p></td>
+                                </tr>
+							                                <tr class="bg_l">
+                                    <td width="120" align="center" class="brd2-all">
+                                        <b><img src="images/ranks/rank19.gif" alt="" valign="absmiddle"> Избранник богов</b>
+                                    </td>
+                                    <td align="center" class="brd2-all"><b>100000000</b></td>
+                                    <td valign="top" class="brd2-all"><p>Новые товары в арсенале:<br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=14999" onclick="showArtifactInfo(false,14999);return false;">Оправа защиты Инг V</a><br>
+<a class="artifact_info b macros_artifact_quality3" href="/artifact_info.php?artikul_id=15017" onclick="showArtifactInfo(false,15017);return false;">Оправа ограды Инг V</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=15431" onclick="showArtifactInfo(false,15431);return false;">Оправа отрицания XVIII</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=24874" onclick="showArtifactInfo(false,24874);return false;">Оправа отражения XI</a><br>
+<a class="artifact_info b macros_artifact_quality2" href="/artifact_info.php?artikul_id=24864" onclick="showArtifactInfo(false,24864);return false;">Оправа пробивания XI</a></p></td>
+                                </tr>
+							                            </tbody>
+                        </table>
+                    </div>
+                    <br>
+
+										<div class="instance_timer_container yellow">
+						<div class="instance_timer_inner" style="width: 100%; margin: 0; left: 0;">Ранг Солдат: 12930 / 30000</div>
+						<div class="instance_timer_center" style="width: 100%; left: -57%"></div>
+						<div class="instance_timer_right"></div>
+						<div class="instance_timer_left"></div>
+					</div>
+
+					<p align="center">
+						<b class="butt1 pointer"><b><input value="Закрыть" type="button" onclick="confirmCenterDivClose();return false;"></b></b>					</p>
+				</td>
+				<td class="tbl-shp-sides rs">&nbsp;</td>
+			</tr>
+			<tr height="18">
+				<td width="20" align="right" valign="top" class="tbl-shp-sml lb"><b></b></td>
+				<td class="tbl-shp-sml bb" valign="top" align="center">&nbsp;   </td>
+				<td width="20" align="left" valign="top" class="tbl-shp-sml rb"><b></b></td>
+			</tr>
+		</tbody></table>
+	</div>
+
+
+<script>
+
+function f_documentSize () {
+	var n_scrollX = 0,
+		n_scrollY = 0;
+
+	if (typeof(window._top().pageYOffset) == 'number') {
+		n_scrollX = window._top().pageXOffset;
+		n_scrollY = window._top().pageYOffset;
+	}
+	else if (document.body && (document.body.scrollLeft || document.body.scrollTop )) {
+		n_scrollX = window._top().document.body.scrollLeft;
+		n_scrollY = window._top().document.body.scrollTop;
+	}
+	else if (document.documentElement && (document.documentElement.scrollLeft || document.documentElement.scrollTop)) {
+		n_scrollX = window._top().document.documentElement.scrollLeft;
+		n_scrollY = window._top().document.documentElement.scrollTop;
+	}
+
+	if (typeof(window.innerWidth) == 'number')
+		return [window._top().innerWidth, window._top().innerHeight, n_scrollX, n_scrollY];
+	if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight))
+		return [window._top().document.documentElement.clientWidth, window._top().document.documentElement.clientHeight, n_scrollX, n_scrollY];
+	if (document.body && (document.body.clientWidth || document.body.clientHeight))
+		return [window._top().document.body.clientWidth, window._top().document.body.clientHeight, n_scrollX, n_scrollY];
+	return [0, 0];
+}
+
+	function share_social(prefix,level){
+		var title = 'Я теперь боец '+level+'-го уровня! А ты?';
+		var content = 'Мне удалось завоевать '+level+'-й уровень, и я подбираюсь к следующему! Догони меня в Легенде! #LINK#';
+		var img_path = '';
+		var action_link =[{'text': 'Играть', 'href': 'https://w1.dwar.ru'}];
+		if (prefix == 'odkl'){
+			eval('_top().' + prefix + '_wall_post(20153957,content)');
+		} else {
+			eval('_top().' + prefix + '_stream_post(title,content,img_path,action_link)');
+		}
+	}
+
+
+	function show_levelup_window(str){
+		$('body').prepend(str);
+		var a_docSize = f_documentSize();
+		var levelup_div = window._top().document.getElementById("levelup_div");
+		if (levelup_div){
+			levelup_div.style.left = ((a_docSize[0] - 488)  / 2) + a_docSize[2] + 'px';
+			var p_top = ((a_docSize[1] - 650) / 2) + a_docSize[3];
+			if (p_top*1<0) p_top=0;
+			levelup_div.style.top  = p_top + 'px';
+			setTimeout (function(){
+				if ($(".levelup-content-inner").height()<320) {
+					$(".levelup-content").height($(".levelup-content-inner").height()+30);
+				}
+			}, 1000);
+		}
+		$('.levelup-button input').click(function(e){
+			e.preventDefault();
+			$("#levelup_div").hide();
+		});
+
+		$('.levelup-social-links a').click(function(){
+			var prefix = $(this).attr('id');
+			var level = $(this).attr('ref');
+			share_social(prefix,level);
+		});
+	}
+
+	function closeMagicMirror() {
+		confirmCenterDivClose();
+	}
+
+	function openMagicMirror(useCanvas) {
+		var options = {width:536,height:536};
+		var par = 'locale_file=images%2Fdata%2Flocale%2Fru%2Fflash_translate.xml&width=' + options.width + '&height=' + options.height;
+		var html;
+		if (useCanvas) {
+			html = document.createElement("div");
+			this.document.ny = new canvas.app.CanvasMirror(par,html);
+		} else {
+			html = AC_FL_RunContent(
+				'wmode', 'transparent',
+				'src', 'images/swf/magic_mirror.swf?ux=1436429692',
+				'width','536',
+				'height','536',
+				'movie', 'images/swf/magic_mirror.swf?ux=1436429692',
+				'allowScriptAccess', 'always',
+				'allowFullScreen', 'true',
+				'codebase', 'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=10,0,0,0',
+				'pluginspage', 'http://www.macromedia.com/go/getflashplayer',
+				'id','ny',
+				'name','ny',
+				'flashvars', par,
+				'cancelwrite', 1
+			);
+		}
+		confirmCenterDiv(html, options);
+	}
+
+	function showNextPopupWindow() {
+		if (queuePopupWindows.length == 0) {
+			return;
+		}
+
+		var data = queuePopupWindows.shift();
+		if (!data) {
+			showNextPopupWindow();
+			return;
+		}
+
+		if (typeof(data.func) != "undefined" && typeof(data.func) == "function") {
+			(data['func']).call(this);
+			return;
+		}
+
+		if (typeof(data.is_popup) != "undefined" && data.is_popup) {
+			popupDialog(data['content'] || '', data['title'] || '', data['width'] || 500);
+			return;
+		}
+
+		var params = {
+			width: data['width'] || 500,
+			height: data['height'] || 500,
+			modal: data['modal'] || false
+		};
+
+		confirmCenterDiv(data['content'] || '', params);
+	}
+
+	$(function() {
+		if (queuePopupWindows.length > 0) {
+			showNextPopupWindow();
+		}
+	});
+
+    $(document).ready(function() {
+        useAjaxArtifactAlt('.artifact_tooltip');
+    });
+</script>
+
+<div id="artifact_alt" style="width:300px; display:none; position:absolute; z-index: 1101;" onmouseover="this.style.display='none';"></div>
+<table cellpadding="0" cellspacing="0" width="100%" height="100%" border="0">
+	<tbody><tr>
+		<td id="main_frame_TD" valign="top" align="left" height="70%" width="100%">
+			<iframe id="main_frame" width="100%" height="100%" frameborder="0" name="main_frame" src="main_frame.php" scrolling="no"></iframe>
+		</td>
+	</tr>
+	<tr id="chat_TR">
+		<td id="chat_TD" valign="top" align="left" height="30%" width="100%">
+			<iframe id="chat" width="100%" height="100%" frameborder="0" name="chat" src="cht.php" scrolling="auto"></iframe>
+		</td>
+	</tr>
+</tbody></table>
+<div id="error_div" class="error_div" style="display:none; z-index: 1000;"></div>
+<iframe width="1" height="1" frameborder="0" id="error" name="error" src="" scrolling="no" style="display: none; position: absolute; left: 0; top: 0; z-index: 1001;" allowtransparency="true"></iframe>
+<div id="smile_div_bg" onclick="HideSmileDiv();"></div>
+<div id="smile_div" class="smile_div">
+	<div class="content"></div>
+	<div class="footer">
+		<table><tbody><tr>
+		<td width="100%"><div class="pages"></div></td>
+		<td><div class="settings smile-btn"><a href="#" onclick="return chat.chat_smiles_settings_toggle();">избр.</a></div></td>
+		<td><div class="emo smile-btn"><a href="#" onclick="return chat.chat_smiles_emo_toggle();">Emo</a></div></td>
+		</tr></tbody></table>
+	</div>
+</div>
+
+<script>
+
+	function HideSmileDiv() {
+		gebi('smile_div_bg').style.display='none'; 
+		gebi('smile_div').style.display='none';
+
+		var obj = _top().frames['chat'].document.getElementById('message');
+		if (obj) obj.focus();
+	}
+	
+	function show_alt() {
+		var alive=0
+		try{
+			alive = _top().obj.offsetParent
+		} catch(e) {}
+		var obj = _top().gebi('artifact_alt');
+		if (!obj) return false;
+		if (alive && obj.style.display != 'none') {
+			setTimeout("show_alt()",500);
+		} else {
+			obj.style.display='none';
+		}
+	}
+	var opera = navigator.userAgent.match(/Opera/i);
+	function cht_resize(val) {
+		if (_top().chtResizeTimeout) {
+			clearTimeout(_top().chtResizeTimeout);
+		}
+
+		_top().chtResizeTimeout = setTimeout(function() {
+			_top().frames['chat'].frames['chat_log'].scrollTo(0, 65535);
+		}, 16);
+
+		//try {
+			var TD1 = _top().gebi('main_frame_TD');
+			var TD2 = _top().gebi('chat_TD');
+			if (!TD1 || !TD2) return false;
+			
+			var value = _top().cht_height;
+			if (val > 0) value += _top().cht_step;
+			else if (val < 0) value -= _top().cht_step;
+			if (value <= 20) value += _top().cht_step;
+			if (value >= 80) value -= _top().cht_step;
+			
+			_top().cht_height = value;
+			
+			if (opera) {
+				rsz();
+			} else {
+				TD1.height = (100-value*1)+'%';
+				TD2.height = (value*1)+'%';
+			}
+			
+		//} catch (e) {}
+	}
+	
+	if (opera) {
+		var obj1 = gebi('main_frame');
+		var obj2 = gebi('chat');
+		obj1.scrolling='auto';
+		obj2.scrolling='auto';
+		var rsz= function(a){
+			obj1.style.height='10px';
+			obj2.style.height='10px';
+			var h=document.body.scrollHeight;
+			h= h < 50 ? 50 : h;
+			var h2 = Math.floor(_top().cht_height*h/100);
+			obj1.style.height=(h-h2)+'px';
+			obj2.style.height = h2+'px';
+		}
+		onresize=rsz;
+		setTimeout('rsz()',200);
+	}
+
+</script>
+					<script type="text/javascript" src="https://connect.mail.ru/js/loader.js"></script>
+					<script type="text/javascript" src="js/mailru.js?ux=1694169972"></script>
+					<script language="javascript" type="text/javascript">
+						var mailru_api_id = '585968';
+						var mailru_api_private = '6262acb58d5b090662562e53821aa58b';
+						var mailru_api_server_url = 'https://w1.dwar.ru/';
+						var mailru_soc_site_id = '1_8_57381_0_';
+						var mairu_logged_in = false;
+					</script>
+									<script src="https://vk.ru/js/api/openapi.js" type="text/javascript"></script>
+					<script type="text/javascript" src="js/vk.js?ux=1758036954"></script>
+					<script language="javascript" type="text/javascript">
+						var vk_api_id = '4831057';
+						var vk_post_image = 'photo134513258_253290868';
+						var vk_soc_site_id = '1_8_57380_0_';
+						var vk_login_fail_message = "Не удалось авторизироваться!\nПроверьте правильность пароля и разрешите сторонним веб-сайтам сохранять и просматривать файлы cookie в настройках браузера!";
+					</script>
+									<script src="https://ok.ru/share/odkl_share.js" type="text/javascript"></script>
+					<link href="https://ok.ru/oauth/resources.do?type=css" rel="stylesheet">
+					<script src="https://ok.ru/oauth/resources.do?type=js" type="text/javascript;charset=utf-8"></script>
+					<script type="text/javascript" src="js/odkl.js?ux=1758036954"></script>
+					<script language="javascript" type="text/javascript">
+						var odkl_client_id = '330752';
+					</script>
+									<script type="text/javascript">
+					function mycom_login(url, post) { return oauth.auth(18, url, post); }
+					</script>
+				<script type="text/javascript" src="js/social.js?ux=1771935789"></script>
+<script type="text/javascript">
+session_update_init(300);
+</script>
+
+<div id="common-overlay" class="common-overlay"></div>
+
+<script type="text/javascript">
+	var draggableOptions = {
+		handle: '.common-popup__header',
+		containment: 'parent',
+		stack: '.common-popup',
+		start: function(e, ui) {
+			if (!$.browser.msie) $('#common-overlay').show();
+		},
+		stop: function(e, ui) {
+			if (!$.browser.msie) $('#common-overlay').hide();
+		}
+	};
+
+	function createPopup(options) {
+		var o = {
+			'closeButton': true,
+			'title': ''
+		};
+		o = $.extend(o, options);
+
+		var id = (o.iframe ? 'popup' + o.iframe.src.hashCode() : '');
+
+		var $popup = $('<div></div>', {
+			'id': id,
+			'class': 'common-popup',
+			'width': o.iframe.width
+		});
+//		if (o.title) {
+			$popup.append($('<div></div>', {
+				'class': 'common-popup__header',
+				'text': o.title
+			}));
+//		}
+		$popup.append($('<div></div>', {
+			'class': 'common-popup__content'
+		}));
+		if (o.iframe) {
+			var $iframe = $('<iframe></iframe>', {
+				'class': 'common-popup__iframe',
+				'src': o.iframe.src,
+//				'width': o.iframe.width,
+				'height': o.iframe.height
+			});
+			$popup.find('div.common-popup__content').html('<iframe class="common-popup__iframe" frameborder="0" id="'+id+'" name="'+id+'" src="'+o.iframe.src+'" height="'+o.iframe.height+'"></iframe>');
+		} else {
+			if (o.text) {
+				$popup.find('div.common-popup__content').text(o.text);
+			}
+			if (o.html) {
+				$popup.find('div.common-popup__content').append(o.html);
+			}
+		}
+		if (o.closeButton) {
+			$popup.append($('<a></a>', {
+				'class': 'common-popup__close',
+				'href': '#',
+				'text': 'x',
+				'title': 'Закрыть'
+			}).on('click', function(e) {destroyPopup(e, $(this));}));
+		}
+		$popup.appendTo($('body'));
+		$popup.css({
+			'left': (screen.availWidth - $popup.width()) / 2,
+			'top': (screen.availHeight - $popup.height()) / 2
+		});
+		$popup.draggable(draggableOptions);
+	}
+	function destroyPopup(e, obj) {
+		var $popup;
+		if (e && e.preventDefault) e.preventDefault();
+		if (typeof obj != 'object') $popup = $('#' + obj);
+		else $popup = obj.parent('.common-popup');
+		$popup.draggable('destroy');
+		$popup.remove();
+	}
+</script>
+
+
+<div style="display: none" id="popup_global">
+	<div class="popup_global_container">
+		<div class="popup-top-left">
+			<div class="popup-top-right">
+				<div class="popup-top-center">
+					
+					<div class="popup_global_title"></div>
+					
+				</div>
+			</div>
+			<div class="popup_global_close_btn" onclick="_top().popupDialogObj.close();"></div>
+		</div>
+		
+		<div class="popup-left-center">
+			<div class="popup-right-center">
+				
+				<div class="popup_global_content" style="padding: 20px;"></div>
+				
+			</div>
+		</div>
+		
+		<div class="popup-left-bottom">
+			<div class="popup-right-bottom">
+				<div class="popup-bottom-center"></div>
+			</div>		
+		</div>
+		
+	</div>
+</div>
+
+
+
+</body></html>
