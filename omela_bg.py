@@ -26,6 +26,7 @@ import time
 import random
 import argparse
 import logging
+import threading
 
 import numpy as np
 import cv2
@@ -80,13 +81,40 @@ log = logging.getLogger("omela_bg")
 
 
 def open_context(p):
-    ctx = p.chromium.launch_persistent_context(
-        USER_DATA,
+    """Открыть окно браузера с сохранённой сессией.
+
+    Пытаемся запустить НАСТОЯЩИЙ установленный Google Chrome — тогда вход в игру
+    через кнопку «Google» работает (Google не считает окно «небезопасным»).
+    Если Chrome не найден — откатываемся на встроенный Chromium (тогда вход
+    через Google может блокироваться — заходи логином/паролем игры).
+    """
+    launch_kwargs = dict(
+        user_data_dir=USER_DATA,
         headless=False,
         viewport=VIEWPORT,
         device_scale_factor=1,
-        args=["--disable-blink-features=AutomationControlled"],
+        args=[
+            "--disable-blink-features=AutomationControlled",
+            "--no-first-run",
+            "--no-default-browser-check",
+        ],
+        # убираем флаги, по которым Google определяет «автоматизацию» и блокирует вход
+        ignore_default_args=["--enable-automation"],
     )
+    try:
+        ctx = p.chromium.launch_persistent_context(channel="chrome", **launch_kwargs)
+        log.info("Запущен установленный Google Chrome — вход через кнопку Google доступен.")
+    except Exception as e:
+        log.warning("Chrome не запустился (%s). Использую встроенный Chromium "
+                    "(вход через Google может не работать).", e)
+        ctx = p.chromium.launch_persistent_context(**launch_kwargs)
+    # дополнительно прячем признак автоматизации (navigator.webdriver = undefined)
+    try:
+        ctx.add_init_script(
+            "Object.defineProperty(navigator, 'webdriver', {get: () => undefined});"
+        )
+    except Exception:
+        pass
     page = ctx.pages[0] if ctx.pages else ctx.new_page()
     return ctx, page
 
@@ -138,6 +166,38 @@ def double_click(page, x, y):
     page.mouse.click(x, y)
 
 
+def wait_enter_keep_alive(ctx):
+    """Ждать ENTER в терминале, НЕ «замораживая» браузер.
+
+    Если просто вызвать input(), синхронный Playwright перестаёт обрабатывать
+    события, и всплывающее окно входа (Google / VK Play) зависает на about:blank
+    с сообщением «Отладчик приостановлен на другой вкладке». Поэтому ввод ENTER
+    выносим в отдельный поток, а в главном потоке постоянно «прокачиваем»
+    Playwright — тогда попапы входа работают нормально.
+    """
+    done = threading.Event()
+
+    def _reader():
+        try:
+            input()
+        except (EOFError, KeyboardInterrupt):
+            pass
+        done.set()
+
+    threading.Thread(target=_reader, daemon=True).start()
+    while not done.is_set():
+        try:
+            pg = ctx.pages[0] if ctx.pages else None
+            if pg is not None:
+                # любой вызов Playwright обрабатывает новые окна/вкладки
+                # и снимает «паузу отладчика» со всплывающих окон входа
+                pg.wait_for_timeout(150)
+            else:
+                time.sleep(0.15)
+        except Exception:
+            time.sleep(0.15)
+
+
 def open_and_wait(p, prompt):
     """Открыть окно, дать войти в игру вручную, дождаться ENTER. Возвращает (ctx, page)."""
     ctx, page = open_context(p)
@@ -146,13 +206,17 @@ def open_and_wait(p, prompt):
     except Exception as e:
         log.warning("Страница открылась с задержкой/ошибкой (%s). Это ок — работай в окне.", e)
     log.info("Окно игры открыто.")
-    input("\n>>> " + prompt + "\n>>> Когда готово — нажми ENTER здесь <<<\n")
+    print("\n>>> " + prompt +
+          "\n>>> Когда вошёл в игру — нажми ENTER здесь (окно входа можно "
+          "спокойно кликать) <<<\n", flush=True)
+    wait_enter_keep_alive(ctx)
     return ctx, page
 
 
 def mode_login():
     with sync_playwright() as p:
-        ctx, _ = open_and_wait(p, "Войди в игру (не через Google!).")
+        ctx, _ = open_and_wait(p, "Войди в игру — можно через кнопку Google "
+                                  "(логин/пароль вводишь сам).")
         ctx.close()
     log.info("Сессия сохранена в browser_profile.")
 
@@ -181,6 +245,39 @@ def mode_debug():
         ctx.close()
 
 
+def close_blocking_popup(page):
+    """Закрыть всплывающее окно игры, если оно появилось.
+
+    Например «Ошибка — У Вас нет необходимой профессии!» с кнопкой «закрыть».
+    Такое окно вылезает, если бот случайно кликнул по чужому ресурсу, и блокирует
+    дальнейший сбор. ВАЖНО: интерфейс игры собран из iframe (карта, чат, окно
+    ошибок — во вложенных фреймах), поэтому кнопку ищем ВО ВСЕХ фреймах, а не
+    только в верхнем документе. Возвращает True, если что-то закрыл.
+    """
+    closed = False
+    try:
+        frames = list(page.frames)
+    except Exception:
+        frames = []
+    for fr in frames:
+        try:
+            btn = fr.get_by_text("закрыть", exact=True)
+            count = btn.count()
+        except Exception:
+            continue
+        for i in range(min(count, 5)):
+            try:
+                b = btn.nth(i)
+                if b.is_visible():
+                    b.click(timeout=1000)
+                    closed = True
+                    log.info("Закрыл окно ошибки (недоступный ресурс / нет профессии).")
+                    time.sleep(random.uniform(0.3, 0.6))
+            except Exception:
+                continue
+    return closed
+
+
 def mode_run():
     with sync_playwright() as p:
         ctx, page = open_and_wait(
@@ -197,6 +294,8 @@ def mode_run():
                     log.info("Лимит времени (%d мин). Стоп.", MAX_RUNTIME_MIN)
                     break
                 cycle += 1
+                # на случай оставшегося с прошлого раза окна ошибки — закрыть
+                close_blocking_popup(page)
                 pts = find_omela(crop_map(screenshot_bgr(page)))
                 if len(pts) > MAX_PER_CYCLE:
                     log.info("Цикл #%d: слишком много пятен (%d) — вероятно анимация, пропускаю.",
@@ -210,6 +309,10 @@ def mode_run():
                     total += 1
                     log.info("Собрал кустик (всего: %d)", total)
                     time.sleep(random.uniform(*GATHER_WAIT))
+                    # кликнули не по омеле? закрываем окно ошибки и идём дальше
+                    if close_blocking_popup(page):
+                        total -= 1  # это была ошибка, а не сбор
+                        log.info("Пропускаю недоступный ресурс, продолжаю сбор.")
                     time.sleep(random.uniform(*BETWEEN_HERBS))
                 time.sleep(random.uniform(*CYCLE_PAUSE))
                 if cycle >= next_long:

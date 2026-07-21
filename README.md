@@ -22,6 +22,7 @@ playwright install chromium
 
 **3. Открыть окно и войти:**
 ```
+python omela_bg.py
 python omela_bg.py --login
 ```
 - Откроется отдельное окно браузера. Войди в игру (логин/пароль), дойди до
