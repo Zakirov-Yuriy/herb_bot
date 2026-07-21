@@ -1,20 +1,7 @@
-# ── Профиль браузера с твоим входом в игру (НЕ коммитить!) ──
 browser_profile/
-
-# ── Логи ──
-*.log
-
-# ── Отладочные скриншоты и дампы страниц ──
-page_full*.png
-page_region*.png
+omela_bg.log
+page_full_*.png
 page_dom_*.html
-screen_full*.png
-screen_region*.png
-debug_*.png
-omela.png
-
-# ── Python ──
+fight_dump_*.json
+fight_zones.json
 __pycache__/
-*.pyc
-.venv/
-venv/
