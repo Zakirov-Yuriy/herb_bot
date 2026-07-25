@@ -23,8 +23,9 @@ omela_bg.py — фоновый автосбор РЕСУРСОВ + авто-бо
 Режимы:
   python omela_bg.py --login          # только войти в игру (сохранить сессию)
   python omela_bg.py --prof geolog    # выбрать профессию и сохранить (потом можно --calib)
-  python omela_bg.py --calib          # МАСТЕР: профессия/пипетка, карта, добыча, «закрыть», бой
-  python omela_bg.py --debug          # скриншот + DOM + слепок боя (для диагностики)
+  python omela_bg.py --sens 0.8       # чувствительность: <1 мягче (видит больше), >1 строже
+  python omela_bg.py --calib          # МАСТЕР: профессия/пипетка/исключение, карта, добыча, «закрыть», бой
+  python omela_bg.py --debug          # скриншот + DOM + карта распознавания + слепок боя
   python omela_bg.py                  # рабочий режим
 
 Остановка: Ctrl+C в терминале.
@@ -83,14 +84,25 @@ MAP_REGION = {"left": 80, "top": 150, "width": 1460, "height": 440}
 # OpenCV: H = 0..179, S = 0..255, V = 0..255.
 PROFESSIONS = {
     # Омела — как было (жёлто-зелёный куст).
+    # blob-поля:
+    #   min_area/size_*/aspect — размер и пропорции пятна (как раньше);
+    #   solidity   — плотность заливки пятна (area / площадь_описанного_прямоуг.);
+    #                камень «сплошной», рваная трава — нет. 0 = выключить;
+    #   circularity— насколько пятно круглое (1.0 = идеальный круг). 0 = выключить;
+    #   contrast   — насколько ресурс ЯРЧЕ/НАСЫЩЕННЕЕ фона вокруг (S+V, 0..255+).
+    #                Главный фильтр против травы: у камня контраст высокий,
+    #                у пятна травы — низкий. 0 = выключить.
     "herbalist": {
         "title": "Травник (омела/травы)",
         "ranges": [[[22, 120, 175], [45, 255, 255]]],
         "blob": {"min_area": 40, "size_min": 8, "size_max": 40,
-                 "aspect": [0.45, 2.2]},
+                 "aspect": [0.45, 2.2],
+                 "solidity": 0.30, "circularity": 0.0, "contrast": 8},
     },
     # Драгоценные камни — яркие, насыщенные, компактные пятна разных цветов.
     # Зелёный диапазон НАМЕРЕННО сужен (S/V высокие), чтобы не ловить траву.
+    # Для камней фильтры формы/контраста включены жёстче: они реально круглые,
+    # плотные и заметно ярче газона — так отсекаем ложные срабатывания по траве.
     "geolog": {
         "title": "Геолог (драгоценные камни/руда)",
         "ranges": [
@@ -103,8 +115,9 @@ PROFESSIONS = {
             [[105, 120, 140], [128, 255, 255]],   # синий / сапфир
             [[129, 100, 140], [160, 255, 255]],   # фиолетовый / аметист / розовый
         ],
-        "blob": {"min_area": 22, "size_min": 6, "size_max": 40,
-                 "aspect": [0.4, 2.5]},
+        "blob": {"min_area": 18, "size_min": 5, "size_max": 42,
+                 "aspect": [0.4, 2.5],
+                 "solidity": 0.40, "circularity": 0.30, "contrast": 18},
     },
     # Рыба — заготовка. Лучше снять цвет пипеткой в --calib.
     "fisher": {
@@ -114,7 +127,8 @@ PROFESSIONS = {
             [[15,  90, 150], [35,  255, 255]],    # золотистые рыбы
         ],
         "blob": {"min_area": 30, "size_min": 7, "size_max": 48,
-                 "aspect": [0.35, 3.0]},
+                 "aspect": [0.35, 3.0],
+                 "solidity": 0.30, "circularity": 0.0, "contrast": 10},
     },
 }
 DEFAULT_PROFESSION = "herbalist"
@@ -129,9 +143,26 @@ BLOB_MIN_AREA = _b["min_area"]
 BLOB_SIZE_MIN = _b["size_min"]
 BLOB_SIZE_MAX = _b["size_max"]
 BLOB_ASPECT   = tuple(_b["aspect"])
+# Новые фильтры формы/контраста (см. комментарий в PROFESSIONS). 0 = выключено.
+BLOB_MIN_SOLIDITY    = _b.get("solidity", 0.0)
+BLOB_MIN_CIRCULARITY = _b.get("circularity", 0.0)
+BLOB_MIN_CONTRAST    = _b.get("contrast", 0.0)
+
+# «Пипетка-исключение»: цвета фона/травы/чужих ресурсов, которые НЕ надо собирать.
+# Пятно, чей центр попадает в один из этих диапазонов, отбрасывается. Заполняется
+# в --calib (Этап 0б, «пипетка фона») и хранится в fight_zones.json → exclude_ranges.
+EXCLUDE_RANGES = []
+
+# Чувствительность распознавания: множитель ко всем фильтрам формы/контраста.
+#   1.0  — как в пресете (баланс);
+#   <1.0 — МЯГЧЕ: бот видит больше (и слабые камни), но чаще ловит лишнее;
+#   >1.0 — СТРОЖЕ: меньше ложных кликов, но можно пропустить тусклый ресурс.
+# Можно переопределить в fight_zones.json ключом "sensitivity" или флагом --sens.
+DETECT_SENSITIVITY = 1.0
 
 MATCH_MIN_DISTANCE = 25
-MAX_PER_CYCLE = 30
+MAX_PER_CYCLE = 40          # больше кадра с анимацией → пропуск (для геолога поднято)
+DETECT_MAX_RESULTS = 12     # за цикл кликаем не больше стольких — самых «уверенных»
 
 # Добыча
 GATHER_CLICKS   = 2            # сколько кликов запускают добычу (в этой игре — двойной)
@@ -152,10 +183,21 @@ SKIP_FAILED_ENABLED = True
 SKIP_FAILED_RADIUS  = 22
 SKIP_FAILED_TTL     = 300.0
 
-# Прокрутка карты
+# ---- ПРОКРУТКА КАРТЫ (вертикальная) -------------------------------------
+# Прокрутка АДАПТИВНАЯ: бот прокручивает карту колёсиком шагами, после каждого
+# шага проверяет, что картинка реально сдвинулась, и когда упирается в край
+# (низ/верх карты) — разворачивается и идёт обратно («маятник»). Так охватывается
+# ВСЯ высота карты, не завися от фиксированного числа позиций, и прокрутка не
+# «проскакивает» дальше края вхолостую.
 MAP_SCROLL_ENABLED   = True
-MAP_SCROLL_POSITIONS = 3
-MAP_SCROLL_DELTA     = 320
+MAP_SCROLL_DELTA     = 260        # на сколько px прокручивать за один шаг (>0)
+MAP_SCROLL_SUBSTEPS  = 4          # дробим шаг на N мелких докруток — плавно, по-людски
+MAP_SCROLL_SETTLE    = (0.45, 0.8)  # пауза после шага, чтобы карта «устоялась» (сек)
+MAP_SCROLL_MAX_POS   = 10         # максимум шагов в одну сторону (страховка от зацикливания)
+MAP_SCROLL_MOVE_MIN  = 2.5        # средняя разница пикселей, выше которой карта «сдвинулась»
+# Устаревшее (совместимость): если задать >1, ограничит размах «маятника».
+MAP_SCROLL_POSITIONS = 0
+MAP_SCROLL_DELTA_LEGACY = MAP_SCROLL_DELTA
 
 # ---- ОКНО «закрыть» -----------------------------------------------------
 # Окна-ошибки нарисованы в игровом canvas (не HTML). Надёжный способ — кликать по
@@ -195,6 +237,42 @@ POPUP_FILL_MIN  = 0.45
 POPUP_SEARCH_X  = (440, 1160)
 POPUP_SEARCH_Y  = (230, 660)
 
+# ---- ЗАНОЗА (splinter) --------------------------------------------------
+# При долгой добыче персонаж получает «занозу»: в чат приходит оповещение, а
+# рабочий инструмент убирается из рук в рюкзак (добывать нельзя, пока не вылечат).
+# Лечение: попросить в чате игроков той же локации «дёрнуть занозу». Чат — это
+# HTML, поэтому бот НАДЁЖНО и читает оповещение, и пишет просьбу сам.
+# Что делает бот: заметил «занозу» → пауза сбора → пишет просьбу в чат (и вежливо
+# повторяет) → зовёт тебя звуком вернуть инструмент в руки → как только добыча
+# снова проходит (инструмент в руках), продолжает сам.
+SPLINTER_ENABLED       = True
+SPLINTER_CHAT_KEYWORD  = "заноз"     # что искать в чате (подстрока, регистр не важен)
+SPLINTER_MESSAGE       = "дерните занозу пожалуйста"  # текст просьбы (можно добавить :mol:)
+SPLINTER_PM_EACH       = True        # True: писать ЛИЧНО каждому игроку локации;
+                                     # False: одно сообщение в общий чат
+# Как в этой игре адресуется сообщение (впечатывается префикс в поле ввода):
+#   личное:          "prv[{nick}] {msg}"
+#   в общий, адресно: "to[{nick}] {msg}"
+SPLINTER_PM_FORMAT     = "prv[{nick}] {msg}"
+SPLINTER_REPEAT_EVERY  = 45.0        # как часто повторять просьбу (сек)
+SPLINTER_POLL          = 20.0        # как часто проверять, вернулся ли инструмент (сек)
+SPLINTER_MAX_WAIT      = 1200.0      # максимум ждать лечения (сек), потом продолжить пробовать
+SPLINTER_ALERT_SOUND   = True        # звать звуковым сигналом
+# Благодарность помощнику. Когда занозу вытащат, в чат приходит «Вы избавились от
+# занозы» и строка «…аптечку, ИМЯ [ур] избавляет воина ТВОЙ_НИК от занозы». Бот
+# достаёт ИМЯ и пишет благодарность в чат.
+SPLINTER_THANKS         = True
+# Тело благодарности. В личке (prv[ник]) имя уже адресовано префиксом, поэтому его
+# в тексте не повторяем. Если хочешь имя в тексте — добавь {name}.
+SPLINTER_THANKS_MESSAGE = "спасибо вам большое!"
+SPLINTER_MY_NAME        = "-VeliS-"          # твой ник (напр. "-VeliS-"); пусто — определять по последней строке лечения
+# Авто-возврат инструмента после лечения. Последовательность:
+#   рюкзак → вкладка «вещи» → навести на кирку (появляется «надеть») → клик «надеть»
+#   → режим охоты. Точки снимаются в --calib (Этап 5): bag / tab / pick / equip / hunt_mode.
+# Если не откалибровано или не сработало — бот зовёт звуком и ждёт, пока наденешь сама.
+SPLINTER_REEQUIP        = True
+SPLINTER_HOVER_WAIT     = 1.2         # сек навести на кирку и подождать надпись «надеть»
+
 # ---- БОЙ ----------------------------------------------------------------
 FIGHT_ENABLED = True
 FIGHT_UI_MARKERS = ["Введите ник цели", "Показать жизнь", "ПОКАЗАТЬ УБИТЫХ", "Показать убитых"]
@@ -205,6 +283,12 @@ FIGHT_HUNT_TARGET    = None
 FIGHT_ROUND_WAIT = (1.6, 3.0)
 FIGHT_MAX_ROUNDS = 60
 FIGHT_POLL_AFTER_GATHER = True
+# Как бот выбирает зону, если их снято несколько (Этап 4 калибровки):
+#   "cycle"  — по кругу, зона за зоной (комбинация ударов: голова→грудь→живот→…)
+#   "random" — случайная зона каждый раунд (труднее предсказать)
+# Значения можно переопределить в fight_zones.json (attack_mode / block_mode).
+FIGHT_ATTACK_MODE = "cycle"
+FIGHT_BLOCK_MODE  = "random"
 
 # =========================================================================
 
@@ -252,6 +336,7 @@ def set_active_profession(name, custom_ranges=None, custom_blob=None):
     """
     global ACTIVE_PROF, RESOURCE_RANGES
     global BLOB_MIN_AREA, BLOB_SIZE_MIN, BLOB_SIZE_MAX, BLOB_ASPECT
+    global BLOB_MIN_SOLIDITY, BLOB_MIN_CIRCULARITY, BLOB_MIN_CONTRAST
     prof = PROFESSIONS.get(name)
     if prof is None:
         log.warning("Профессия '%s' неизвестна. Доступны: %s. Оставляю '%s'.",
@@ -271,18 +356,32 @@ def set_active_profession(name, custom_ranges=None, custom_blob=None):
     BLOB_SIZE_MIN = b["size_min"]
     BLOB_SIZE_MAX = b["size_max"]
     BLOB_ASPECT   = tuple(b["aspect"])
+    BLOB_MIN_SOLIDITY    = b.get("solidity", 0.0)
+    BLOB_MIN_CIRCULARITY = b.get("circularity", 0.0)
+    BLOB_MIN_CONTRAST    = b.get("contrast", 0.0)
     log.info("Профессия: %s [%s] — цвет: %s.", name, prof["title"], src)
 
 
 def apply_saved_config():
     """Подтянуть в глобальные настройки то, что снято мастером --calib."""
-    global MAP_REGION, GATHER_CLICKS
+    global MAP_REGION, GATHER_CLICKS, EXCLUDE_RANGES, DETECT_SENSITIVITY
     z = load_zones() or {}
     # профессия + цвет ресурса (пипетка имеет приоритет над пресетом)
     prof_name = z.get("profession", ACTIVE_PROF)
     set_active_profession(prof_name,
                           custom_ranges=z.get("resource_ranges"),
                           custom_blob=z.get("resource_blob"))
+    # цвета-исключения (пипетка фона): что бот НЕ должен трогать
+    EXCLUDE_RANGES = _ranges_to_np(z.get("exclude_ranges"))
+    if EXCLUDE_RANGES:
+        log.info("Цветов-исключений (фон/трава): %d.", len(EXCLUDE_RANGES))
+    # чувствительность распознавания (если задана в конфиге)
+    s = z.get("sensitivity")
+    if isinstance(s, (int, float)) and 0.2 <= float(s) <= 4.0:
+        DETECT_SENSITIVITY = float(s)
+    if abs(DETECT_SENSITIVITY - 1.0) > 1e-6:
+        log.info("Чувствительность распознавания: %.2f (%s).", DETECT_SENSITIVITY,
+                 "мягче" if DETECT_SENSITIVITY < 1 else "строже")
     mr = z.get("map_region")
     if mr and len(mr) == 4:
         MAP_REGION = {"left": int(mr[0]), "top": int(mr[1]),
@@ -322,9 +421,28 @@ def screenshot_bgr(page):
     return cv2.imdecode(arr, cv2.IMREAD_COLOR)
 
 
-def find_resource(img_bgr):
-    """Найти ресурс активной профессии по цвету (одному/нескольким диапазонам)
-    и по форме пятна. Возвращает список центров (cx, cy) внутри кадра карты."""
+def _pixel_in_ranges(hsv_px, ranges):
+    """Попадает ли HSV-пиксель (h,s,v) хотя бы в один диапазон из списка np-пар."""
+    h_, s_, v_ = int(hsv_px[0]), int(hsv_px[1]), int(hsv_px[2])
+    for lo, hi in ranges:
+        if (lo[0] <= h_ <= hi[0] and lo[1] <= s_ <= hi[1] and lo[2] <= v_ <= hi[2]):
+            return True
+    return False
+
+
+def find_resource_scored(img_bgr, debug=False):
+    """Найти ресурс активной профессии и вернуть список кандидатов со ВСЕМИ метриками:
+    [{"cx","cy","w","h","area","solidity","circularity","contrast","sat","score"}, ...],
+    отсортированный по «уверенности» (score) по убыванию.
+
+    Помимо цвета и размера теперь применяются:
+      • solidity   — пятно должно быть плотным (не рваная трава);
+      • circularity— пятно должно быть достаточно круглым (камни округлые);
+      • contrast   — ресурс должен быть заметно ЯРЧЕ/НАСЫЩЕННЕЕ фона вокруг;
+      • exclude    — если центр пятна попал в «цвет фона» (пипетка-исключение) — отброс.
+    Пороги масштабируются DETECT_SENSITIVITY (мягче/строже). Debug-режим не отсекает
+    кандидатов, а помечает, прошёл ли каждый фильтр (для наглядной диагностики).
+    """
     hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
     mask = None
     for lo, hi in RESOURCE_RANGES:
@@ -334,21 +452,106 @@ def find_resource(img_bgr):
         return []
     k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9))
     closed = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, k)
-    n, _, stats, cent = cv2.connectedComponentsWithStats(closed, 8)
-    centers = []
+    n, labels, stats, cent = cv2.connectedComponentsWithStats(closed, 8)
+
+    # HSV-каналы как int для расчёта яркости/насыщенности внутри пятна и вокруг
+    s_ch = hsv[:, :, 1].astype(np.int32)
+    v_ch = hsv[:, :, 2].astype(np.int32)
+    bright = s_ch + v_ch                       # «заметность» пикселя = S + V
+    ring_k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (13, 13))
+
+    sens = max(0.2, min(4.0, DETECT_SENSITIVITY))
+    min_area = max(6.0, BLOB_MIN_AREA * sens)          # мягче → ловим мельче
+    min_solidity    = BLOB_MIN_SOLIDITY * sens
+    min_circularity = BLOB_MIN_CIRCULARITY * sens
+    min_contrast    = BLOB_MIN_CONTRAST * sens
+
+    cands = []
     for i in range(1, n):
         x, y, w, h, area = stats[i]
-        if area < BLOB_MIN_AREA:
-            continue
-        if not (BLOB_SIZE_MIN <= w <= BLOB_SIZE_MAX and BLOB_SIZE_MIN <= h <= BLOB_SIZE_MAX):
-            continue
-        if not (BLOB_ASPECT[0] <= w / max(h, 1) <= BLOB_ASPECT[1]):
-            continue
         cx, cy = int(cent[i][0]), int(cent[i][1])
-        if all((cx - px) ** 2 + (cy - py) ** 2 >= MATCH_MIN_DISTANCE ** 2
-               for px, py in centers):
-            centers.append((cx, cy))
-    return centers
+        rej = None
+
+        # 1) размер / пропорции (как раньше)
+        if area < min_area:
+            rej = "area"
+        elif not (BLOB_SIZE_MIN <= w <= BLOB_SIZE_MAX and BLOB_SIZE_MIN <= h <= BLOB_SIZE_MAX):
+            rej = "size"
+        elif not (BLOB_ASPECT[0] <= w / max(h, 1) <= BLOB_ASPECT[1]):
+            rej = "aspect"
+
+        # 2) цвет-исключение: центр пятна — это фон/трава? → выбросить
+        if rej is None and EXCLUDE_RANGES and 0 <= cy < hsv.shape[0] and 0 <= cx < hsv.shape[1]:
+            if _pixel_in_ranges(hsv[cy, cx], EXCLUDE_RANGES):
+                rej = "exclude"
+
+        blob = (labels[y:y + h, x:x + w] == i)
+        blob_area = int(blob.sum()) or 1
+
+        # 3) плотность заливки (solidity) = площадь пятна / площадь bbox
+        solidity = blob_area / float(max(w * h, 1))
+        if rej is None and min_solidity > 0 and solidity < min_solidity:
+            rej = "solidity"
+
+        # 4) округлость (circularity) через периметр контура: 4π·S / P²
+        circularity = 0.0
+        if min_circularity > 0 or debug:
+            try:
+                bm = (blob.astype(np.uint8)) * 255
+                cnts, _ = cv2.findContours(bm, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+                if cnts:
+                    c = max(cnts, key=cv2.contourArea)
+                    per = cv2.arcLength(c, True)
+                    if per > 0:
+                        circularity = min(1.0, 4.0 * np.pi * cv2.contourArea(c) / (per * per))
+            except Exception:
+                circularity = 0.0
+        if rej is None and min_circularity > 0 and circularity < min_circularity:
+            rej = "circularity"
+
+        # 5) контраст с фоном: (S+V) внутри пятна vs кольцо вокруг него
+        contrast = 0.0
+        sat_in = 0.0
+        if min_contrast > 0 or debug:
+            bm_full = np.zeros(closed.shape, np.uint8)
+            bm_full[y:y + h, x:x + w][blob] = 1
+            ring = cv2.dilate(bm_full, ring_k) - bm_full
+            in_vals = bright[bm_full == 1]
+            ring_vals = bright[ring == 1]
+            sat_in = float(s_ch[bm_full == 1].mean()) if in_vals.size else 0.0
+            if in_vals.size and ring_vals.size:
+                contrast = float(in_vals.mean() - ring_vals.mean())
+        if rej is None and min_contrast > 0 and contrast < min_contrast:
+            rej = "contrast"
+
+        # score — «уверенность»: контраст + насыщенность + округлость + размер
+        score = (max(contrast, 0.0) * 1.0 + sat_in * 0.25
+                 + circularity * 40.0 + min(area, 300) * 0.10)
+
+        item = {"cx": cx, "cy": cy, "w": int(w), "h": int(h), "area": int(area),
+                "solidity": round(solidity, 2), "circularity": round(circularity, 2),
+                "contrast": round(contrast, 1), "sat": round(sat_in, 0),
+                "score": round(score, 1), "reject": rej}
+        if debug or rej is None:
+            cands.append(item)
+
+    # сортируем по уверенности; для рабочего режима оставляем только прошедших фильтры
+    cands.sort(key=lambda d: d["score"], reverse=True)
+    if not debug:
+        # дедуп по расстоянию: держим самые «уверенные», близкие дубли выкидываем.
+        # Кап по количеству НЕ здесь (иначе сломается защита «слишком много → анимация»).
+        picked = []
+        for d in cands:
+            if all((d["cx"] - p["cx"]) ** 2 + (d["cy"] - p["cy"]) ** 2 >= MATCH_MIN_DISTANCE ** 2
+                   for p in picked):
+                picked.append(d)
+        return picked
+    return cands
+
+
+def find_resource(img_bgr):
+    """Совместимость: список центров (cx, cy) ресурса, отсортированный по уверенности."""
+    return [(d["cx"], d["cy"]) for d in find_resource_scored(img_bgr)]
 
 
 def sample_hsv_ranges_at(full_bgr, x, y, hw=13, h_pad=10, sv_pad=70):
@@ -383,6 +586,41 @@ def sample_hsv_ranges_at(full_bgr, x, y, hw=13, h_pad=10, sv_pad=70):
         ranges.append([[0, s_lo, v_lo], [h_hi - 180, 255, 255]])
     else:
         ranges.append([[h_lo, s_lo, v_lo], [h_hi, 255, 255]])
+    return ranges
+
+
+def sample_exclude_ranges_at(full_bgr, x, y, hw=13, h_pad=10, sv_pad=55):
+    """«Пипетка-исключение»: снять цвет ФОНА/травы вокруг точки и построить УЗКИЙ
+    диапазон HSV именно этого цвета — включая ограниченный коридор по S/V.
+
+    Отличие от sample_hsv_ranges_at: здесь S/V ограничены и снизу, и сверху
+    (медиана±sv_pad), а не «до 255». Это важно: у камня того же оттенка, что и
+    трава (например, изумруд ≈ зелёная трава), насыщенность/яркость выше — и он
+    НЕ попадёт в этот узкий диапазон, значит исключение фона его не заденет.
+    Возвращает список [ [[h,s,v],[h,s,v]], ... ] (красный — два диапазона) или [].
+    """
+    h, w = full_bgr.shape[:2]
+    x0, x1 = max(0, int(x) - hw), min(w, int(x) + hw)
+    y0, y1 = max(0, int(y) - hw), min(h, int(y) + hw)
+    if x1 <= x0 or y1 <= y0:
+        return []
+    patch = full_bgr[y0:y1, x0:x1]
+    hsv = cv2.cvtColor(patch, cv2.COLOR_BGR2HSV).reshape(-1, 3)
+    hm = int(np.median(hsv[:, 0]))
+    sm = int(np.median(hsv[:, 1]))
+    vm = int(np.median(hsv[:, 2]))
+    s_lo, s_hi = max(0, sm - sv_pad), min(255, sm + sv_pad)
+    v_lo, v_hi = max(0, vm - sv_pad), min(255, vm + sv_pad)
+    h_lo, h_hi = hm - h_pad, hm + h_pad
+    ranges = []
+    if h_lo < 0:
+        ranges.append([[0, s_lo, v_lo], [h_hi, s_hi, v_hi]])
+        ranges.append([[180 + h_lo, s_lo, v_lo], [179, s_hi, v_hi]])
+    elif h_hi > 179:
+        ranges.append([[h_lo, s_lo, v_lo], [179, s_hi, v_hi]])
+        ranges.append([[0, s_lo, v_lo], [h_hi - 180, s_hi, v_hi]])
+    else:
+        ranges.append([[h_lo, s_lo, v_lo], [h_hi, s_hi, v_hi]])
     return ranges
 
 
@@ -421,17 +659,54 @@ def click_point(page, xy):
 
 
 def scroll_map(page, dy):
+    """Плавно прокрутить карту колёсиком на dy px (положительное — вниз).
+
+    Наводим курсор в центр карты (иначе колесо крутит не ту область), затем
+    прокручиваем НЕ одним рывком, а MAP_SCROLL_SUBSTEPS мелкими докрутками —
+    это надёжнее срабатывает в игровом canvas и выглядит естественнее.
+    """
     cx = MAP_REGION["left"] + MAP_REGION["width"] // 2
     cy = MAP_REGION["top"] + MAP_REGION["height"] // 2
+    subs = max(1, MAP_SCROLL_SUBSTEPS)
+    step = int(round(dy / float(subs)))
+    if step == 0:
+        step = 1 if dy > 0 else -1
     try:
-        page.mouse.move(cx, cy)
-        time.sleep(random.uniform(0.1, 0.2))
-        page.mouse.wheel(0, dy)
-        time.sleep(random.uniform(0.5, 0.9))
+        page.mouse.move(cx + random.randint(-6, 6), cy + random.randint(-6, 6))
+        time.sleep(random.uniform(0.08, 0.18))
+        for _ in range(subs):
+            page.mouse.wheel(0, step)
+            time.sleep(random.uniform(0.05, 0.12))
+        time.sleep(random.uniform(*MAP_SCROLL_SETTLE))
         return True
     except Exception as e:
         log.warning("Прокрутка карты не удалась: %s", e)
         return False
+
+
+def _map_diff(page):
+    """Сделать скриншот и вернуть уменьшенный ч/б кадр карты (для сравнения «до/после»)."""
+    try:
+        crop = crop_map(screenshot_bgr(page))
+        small = cv2.resize(crop, (160, 90), interpolation=cv2.INTER_AREA)
+        return cv2.cvtColor(small, cv2.COLOR_BGR2GRAY).astype(np.int16)
+    except Exception:
+        return None
+
+
+def scroll_step_adaptive(page, direction):
+    """Прокрутить карту на один шаг в сторону direction (+1 вниз / −1 вверх) и
+    проверить, СДВИНУЛАСЬ ли карта. Возвращает True, если сдвинулась (значит края
+    ещё не достигли), False — если картинка не изменилась (уперлись в край)."""
+    before = _map_diff(page)
+    ok = scroll_map(page, MAP_SCROLL_DELTA * (1 if direction >= 0 else -1))
+    if not ok:
+        return False
+    after = _map_diff(page)
+    if before is None or after is None:
+        return True   # не смогли сравнить — считаем, что сдвинулись (не блокируем цикл)
+    moved = float(np.abs(after - before).mean())
+    return moved >= MAP_SCROLL_MOVE_MIN
 
 
 def wait_enter_keep_alive(ctx):
@@ -787,15 +1062,38 @@ def resolve_fight_targets():
     if not (block or attack or exit_t or hunt_t):
         z = load_zones()
         if z:
-            if z.get("block"):
+            if z.get("blocks"):                          # несколько зон блока
+                block = [tuple(p) for p in z["blocks"]]
+            elif z.get("block"):                         # одна зона (старый формат)
                 block = [tuple(z["block"])]
-            if z.get("attack"):
+            if z.get("attacks"):                         # несколько зон атаки
+                attack = [tuple(p) for p in z["attacks"]]
+            elif z.get("attack"):
                 attack = [tuple(z["attack"])]
             if z.get("exit"):
                 exit_t = tuple(z["exit"])
             if z.get("hunt"):
                 hunt_t = tuple(z["hunt"])
     return block, attack, exit_t, hunt_t
+
+
+def get_fight_modes():
+    """Режимы выбора зоны: (атака, блок). Значение из fight_zones.json важнее дефолта."""
+    z = load_zones() or {}
+    am = z.get("attack_mode") or FIGHT_ATTACK_MODE
+    bm = z.get("block_mode") or FIGHT_BLOCK_MODE
+    return am, bm
+
+
+def _pick_zone(zones_list, mode, idx):
+    """Выбрать точку из списка: 'cycle' — по кругу (idx), иначе — случайно."""
+    if not zones_list:
+        return None
+    if len(zones_list) == 1:
+        return zones_list[0]
+    if mode == "cycle":
+        return zones_list[idx % len(zones_list)]
+    return random.choice(zones_list)
 
 
 def stats_screen_present(page):
@@ -842,16 +1140,23 @@ def do_fight(page):
             time.sleep(random.uniform(*FIGHT_ROUND_WAIT))
             waited += 1
         return
+    atk_mode, blk_mode = get_fight_modes()
+    if len(attack) > 1 or len(block) > 1:
+        log.info("Зоны: атака=%d (%s), блок=%d (%s).",
+                 len(attack), atk_mode, len(block), blk_mode)
     end_baseline = _count_text_in_frames(page, "Окончен бой")
     rounds = 0
     while in_fight(page) and rounds < FIGHT_MAX_ROUNDS:
         rounds += 1
-        if block:
-            click_point(page, random.choice(block))
+        bp = _pick_zone(block, blk_mode, rounds - 1)
+        ap = _pick_zone(attack, atk_mode, rounds - 1)
+        if bp:
+            click_point(page, bp)
             time.sleep(random.uniform(0.15, 0.35))
-        if attack:
-            click_point(page, random.choice(attack))
-        log.info("Раунд #%d: блок + атака.", rounds)
+        if ap:
+            click_point(page, ap)
+        log.info("Раунд #%d: блок %s + атака %s.", rounds,
+                 tuple(bp) if bp else "—", tuple(ap) if ap else "—")
         time.sleep(random.uniform(*FIGHT_ROUND_WAIT))
         if _count_text_in_frames(page, "Окончен бой") > end_baseline:
             log.info("🏆 Бой окончен (победа). Жму «выход».")
@@ -895,6 +1200,38 @@ def dump_fight(page, stamp):
     return path
 
 
+def annotate_detection(crop_bgr, cands, path):
+    """Нарисовать на кадре карты найденные пятна: зелёный кружок = принято,
+    красный = отсеяно (с подписью причины). Помогает подобрать чувствительность."""
+    try:
+        img = crop_bgr.copy()
+        for c in cands:
+            ok = c["reject"] is None
+            color = (0, 200, 0) if ok else (0, 0, 230)
+            r = max(6, int(max(c["w"], c["h"]) / 2) + 3)
+            cv2.circle(img, (c["cx"], c["cy"]), r, color, 2)
+            tag = ("%.0f" % c["score"]) if ok else c["reject"]
+            cv2.putText(img, tag, (c["cx"] + r, c["cy"]),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.4, color, 1, cv2.LINE_AA)
+        cv2.imwrite(path, img)
+    except Exception as e:
+        log.warning("Не удалось сохранить аннотированный кадр: %s", e)
+
+
+def save_color_mask(crop_bgr, path):
+    """Сохранить бинарную цветовую маску активной профессии (что подходит по цвету)."""
+    try:
+        hsv = cv2.cvtColor(crop_bgr, cv2.COLOR_BGR2HSV)
+        mask = None
+        for lo, hi in RESOURCE_RANGES:
+            m = cv2.inRange(hsv, lo, hi)
+            mask = m if mask is None else cv2.bitwise_or(mask, m)
+        if mask is not None:
+            cv2.imwrite(path, mask)
+    except Exception as e:
+        log.warning("Не удалось сохранить маску: %s", e)
+
+
 def mode_debug():
     with sync_playwright() as p:
         ctx, page = open_and_wait(p, "Войди в игру (можно открыть окно-ошибку или бой).")
@@ -911,12 +1248,337 @@ def mode_debug():
         if tgt:
             log.info("Доля красного в точке «закрыть» %s = %.2f (окно открыто, если > %.2f).",
                      tgt, _red_fraction_at(full, tgt[0], tgt[1]), POPUP_RED_FRAC)
-        log.info("Профессия: %s (%s). Диапазонов цвета: %d.",
-                 ACTIVE_PROF, PROFESSIONS[ACTIVE_PROF]["title"], len(RESOURCE_RANGES))
-        log.info("Найдено ресурсов (%s): %d. Файлы page_full_%s.png / page_dom_%s.html.",
-                 ACTIVE_PROF, len(find_resource(crop_map(full))), stamp, stamp)
+        log.info("Профессия: %s (%s). Диапазонов цвета: %d. Исключений: %d. Чувств.: %.2f.",
+                 ACTIVE_PROF, PROFESSIONS[ACTIVE_PROF]["title"], len(RESOURCE_RANGES),
+                 len(EXCLUDE_RANGES), DETECT_SENSITIVITY)
+        # --- визуальная диагностика распознавания ---
+        crop = crop_map(full)
+        cands = find_resource_scored(crop, debug=True)
+        accepted = [c for c in cands if c["reject"] is None]
+        annotate_detection(crop, cands, "detect_%s.png" % stamp)
+        save_color_mask(crop, "mask_%s.png" % stamp)
+        log.info("Найдено ресурсов (%s): ПРИНЯТО %d из %d кандидатов.",
+                 ACTIVE_PROF, len(accepted), len(cands))
+        # что отсеяли и почему (топ причин)
+        reasons = {}
+        for c in cands:
+            if c["reject"]:
+                reasons[c["reject"]] = reasons.get(c["reject"], 0) + 1
+        if reasons:
+            log.info("Отсеяно по причинам: %s",
+                     ", ".join("%s=%d" % (k, v) for k, v in sorted(reasons.items())))
+        for c in accepted[:8]:
+            log.info("  ✔ (%d,%d) score=%.1f contrast=%.1f solid=%.2f circ=%.2f sat=%.0f",
+                     c["cx"], c["cy"], c["score"], c["contrast"], c["solidity"],
+                     c["circularity"], c["sat"])
+        log.info("Файлы: page_full_%s.png, detect_%s.png (зелёные=принято, красные=отсев), "
+                 "mask_%s.png (цветовая маска), page_dom_%s.html.",
+                 stamp, stamp, stamp, stamp)
         dump_fight(page, stamp)
         ctx.close()
+
+
+# =========================================================================
+#                                ЗАНОЗА
+# =========================================================================
+
+def alert_beep(n=4):
+    """Позвать игрока звуком. На Windows — winsound, иначе — системный «бип»."""
+    if not SPLINTER_ALERT_SOUND:
+        return
+    try:
+        import winsound
+        for _ in range(n):
+            winsound.Beep(1000, 300)
+            time.sleep(0.12)
+    except Exception:
+        for _ in range(n):
+            print("\a", end="", flush=True)
+            time.sleep(0.2)
+
+
+def chat_splinter_count(page):
+    """Сколько раз слово-маркер «заноз…» встречается сейчас в чате (все фреймы)."""
+    return _count_text_in_frames(page, SPLINTER_CHAT_KEYWORD)
+
+
+def read_chat_text(page):
+    """Собрать видимый текст чата (для разбора, кто вытащил занозу)."""
+    chunks = []
+    for fr in _all_frames(page):
+        u = (getattr(fr, "url", "") or "")
+        nm = (getattr(fr, "name", "") or "")
+        if "cht" not in u and "chat" not in nm:
+            continue
+        try:
+            loc = fr.locator("#content")
+            if loc.count() > 0:
+                chunks.append(loc.first.inner_text(timeout=1000))
+        except Exception:
+            continue
+    return "\n".join(chunks)
+
+
+def parse_splinter_helper(text, my_name=""):
+    """Из строки лечения достать НИК помощника: «…аптечку, ИМЯ [ур] избавляет
+    воина ТВОЙ_НИК от занозы». Возвращает ник или None."""
+    import re
+    if my_name:
+        m = re.search(r"аптечк[^,]*,\s*(.+?)\s*\[\d+\]\s*избавля\w+\s+воин\w*\s+"
+                      + re.escape(my_name), text)
+        if m:
+            return m.group(1).strip() or None
+    m = re.search(r"аптечк[^,]*,\s*(.+?)\s*\[\d+\]\s*избавля", text)
+    if not m:
+        m = re.search(r"([^\n]+?)\s*\[\d+\]\s*избавля\w+\s+воин", text)
+    if not m:
+        return None
+    name = m.group(1).strip()
+    if "," in name:                    # отрезать возможный префикс «Применив …,»
+        name = name.split(",")[-1].strip()
+    return name or None
+
+
+def post_chat(page, text):
+    """Написать text в игровой чат: заполнить поле ввода и отправить (Enter/кнопка)."""
+    for fr in _all_frames(page):
+        try:
+            inp = fr.locator("#message")
+            if inp.count() == 0:
+                continue
+            el = inp.first
+            if not el.is_visible():
+                continue
+            el.click(timeout=1500)
+            el.fill(text)
+            time.sleep(0.2)
+            el.press("Enter")
+            time.sleep(0.3)
+            # если текст остался в поле — Enter не отправил, жмём кнопку «отправить»
+            try:
+                if (el.input_value() or "").strip():
+                    sb = fr.locator("#send_btn")
+                    if sb.count() > 0:
+                        sb.first.click(timeout=1500)
+            except Exception:
+                pass
+            return True
+        except Exception:
+            continue
+    return False
+
+
+def _user_frame(page):
+    """Фрейм со списком игроков локации (cht_iframe.php?mode=user)."""
+    for fr in _all_frames(page):
+        u = (getattr(fr, "url", "") or "")
+        nm = (getattr(fr, "name", "") or "")
+        if "mode=user" in u or nm == "chat_user":
+            return fr
+    return None
+
+
+def pm_all_in_location(page, message, my_name=""):
+    """Написать ЛИЧНО каждому игроку в локации, впечатывая префикс prv[ник].
+    (Формат — SPLINTER_PM_FORMAT.) Себя пропускаем. Возвращает число отправленных."""
+    nicks = location_nicks(page)
+    sent = 0
+    for nick in nicks:
+        if my_name and nick.lower() == my_name.lower():
+            continue                      # себе не пишем
+        line = SPLINTER_PM_FORMAT.format(nick=nick, msg=message)
+        if post_chat(page, line):
+            sent += 1
+            time.sleep(random.uniform(0.5, 1.0))
+    return sent
+
+
+def pm_one_in_location(page, nick, message):
+    """Написать ЛИЧНО одному игроку (впечатать prv[ник] текст). True — отправлено."""
+    if not nick:
+        return False
+    line = SPLINTER_PM_FORMAT.format(nick=nick, msg=message)
+    return post_chat(page, line)
+
+
+def location_nicks(page):
+    """Список ников игроков в локации (без уровня «[NN]» и служебных строк)."""
+    import re
+    fr = _user_frame(page)
+    out = []
+    if fr is None:
+        return out
+    try:
+        items = fr.locator(".chat_user_item")
+        n = items.count()
+    except Exception:
+        return out
+    for i in range(n):
+        try:
+            it = items.nth(i)
+            pn = it.locator(".pnick")
+            raw = (pn.first.inner_text(timeout=800) if pn.count() > 0
+                   else it.inner_text(timeout=800)) or ""
+        except Exception:
+            continue
+        line = raw.strip().splitlines()[0].strip() if raw.strip() else ""
+        if not line or line.startswith("- - -"):
+            continue
+        nick = re.sub(r"\s*\[\d+\].*$", "", line).strip()   # убрать «[20]…»
+        if nick:
+            out.append(nick)
+    return out
+
+
+def find_helper_nick(page, healing_text):
+    """Кто вытащил занозу: ник из списка локации, который встречается в строке
+    лечения (надёжнее разбора текста — не цепляет титул). Фолбэк — разбор строки."""
+    for nick in location_nicks(page):
+        if nick and nick.lower() in healing_text.lower():
+            return nick
+    return parse_splinter_helper(healing_text, SPLINTER_MY_NAME)
+
+
+def request_splinter_help(page):
+    """Попросить вытащить занозу: лично каждому (SPLINTER_PM_EACH) или в общий чат."""
+    if SPLINTER_PM_EACH:
+        sent = pm_all_in_location(page, SPLINTER_MESSAGE, SPLINTER_MY_NAME)
+        if sent:
+            log.info("Личная просьба разослана игрокам локации: %d.", sent)
+            return True
+        log.info("Не нашёл игроков для лички — пишу в общий чат.")
+    return post_chat(page, SPLINTER_MESSAGE)
+
+
+def get_reequip_targets():
+    """Точки авто-возврата инструмента из калибровки (dict): bag, tab, pick, equip, hunt_mode."""
+    z = load_zones() or {}
+    return {k: z.get(k) for k in ("bag", "tab", "pick", "equip", "hunt_mode")}
+
+
+def reequip_tool(page):
+    """Рюкзак → вкладка «вещи» → навести на кирку → клик «надеть» → режим охоты.
+    Работает только если точки откалиброваны (Этап 5). Возвращает False, если нет."""
+    t = get_reequip_targets()
+    if not (t["bag"] and t["pick"] and t["equip"]):
+        return False
+    click_point(page, t["bag"])                  # открыть рюкзак
+    time.sleep(random.uniform(0.9, 1.5))
+    if t["tab"]:                                 # перейти на вкладку «вещи»
+        click_point(page, t["tab"])
+        time.sleep(random.uniform(0.7, 1.2))
+    # навести на кирку, чтобы появилась надпись «надеть»
+    page.mouse.move(int(t["pick"][0]), int(t["pick"][1]))
+    time.sleep(SPLINTER_HOVER_WAIT)
+    click_point(page, t["equip"])                # кликнуть «надеть»
+    time.sleep(random.uniform(0.8, 1.4))
+    if t["hunt_mode"]:                           # режим охоты
+        click_point(page, t["hunt_mode"])
+        time.sleep(random.uniform(0.9, 1.5))
+    return True
+
+
+def try_reequip_verified(page, tries=2):
+    """Попытаться надеть кирку и ПРОВЕРИТЬ, что добыча заработала. True — получилось."""
+    t = get_reequip_targets()
+    if not (t["bag"] and t["pick"] and t["equip"]):
+        log.info("Авто-возврат кирки не настроен (Этап 5 калибровки) — верни вручную.")
+        return False
+    for attempt in range(tries):
+        log.info("Надеваю кирку из рюкзака (попытка %d/%d)…", attempt + 1, tries)
+        reequip_tool(page)
+        time.sleep(1.2)
+        close_if_blocking(page)
+        if _test_can_gather(page) is True:
+            return True
+    return False
+
+
+def _test_can_gather(page):
+    """Проверить, вернулся ли инструмент: пробуем добыть один ресурс и смотрим окно.
+    'progress' → добыча пошла (инструмент в руках) → True. 'error' → закрываем окно,
+    инструмента нет → False. Ресурса не видно → None (проверить не удалось)."""
+    try:
+        pts = find_resource(crop_map(screenshot_bgr(page)))
+    except Exception:
+        return None
+    if not pts:
+        return None
+    px, py = map_to_page(*pts[0])
+    gather_click(page, px, py)
+    time.sleep(1.2)
+    kind = window_kind(page)
+    if kind == "progress":
+        return True
+    if kind == "error":
+        close_blocking_popup(page)
+        return False
+    return False
+
+
+def handle_splinter(page):
+    """Обработать занозу: пауза сбора, просьба в чат (+повтор), звук; ждём, пока
+    игрок вернёт инструмент и добыча снова заработает."""
+    log.warning("🩹 ЗАНОЗА! Инструмент убран в рюкзак — сбор на паузе.")
+    request_splinter_help(page)
+    log.warning(">>> ВЕРНИ ИНСТРУМЕНТ В РУКИ (надень кирку → режим охоты), когда занозу "
+                "вытащат. Бот ждёт, зовёт сигналом и сам продолжит, когда добыча пойдёт.")
+    alert_beep(6)
+    start = time.time()
+    last_post = time.time()
+    thanked = False
+    reequip_tried = False
+    while True:
+        if (time.time() - start) > SPLINTER_MAX_WAIT:
+            log.warning("Заноза не вылечена за %.0f мин — пробую продолжить сбор.",
+                        SPLINTER_MAX_WAIT / 60.0)
+            return
+        # бой во время ожидания не пропускаем
+        if FIGHT_ENABLED and in_fight(page):
+            do_fight(page)
+        # на всякий случай закрываем окна-ошибки
+        close_if_blocking(page)
+
+        # занозу вытащили? («Вы избавились от занозы» / «…избавляет воина … от занозы»)
+        if not thanked:
+            try:
+                txt = read_chat_text(page)
+            except Exception:
+                txt = ""
+            low = txt.lower()
+            if "избавил" in low and "заноз" in low:
+                helper = find_helper_nick(page, txt)
+                if SPLINTER_THANKS and helper:
+                    msg = SPLINTER_THANKS_MESSAGE.format(name=helper)
+                    # благодарим ЛИЧНО помощнику; если не вышло — в общий чат
+                    ok = pm_one_in_location(page, helper, msg) or post_chat(page, msg)
+                    log.info("Занозу вытащил(а) %s — благодарность %s.", helper,
+                             "отправлена" if ok else "НЕ отправилась")
+                else:
+                    log.info("Занозу вытащили (имя помощника не распознал — поблагодари сам(а)).")
+                thanked = True
+
+        # занозу вытащили → пробуем сами надеть кирку и включить охоту
+        if thanked and not reequip_tried and SPLINTER_REEQUIP:
+            reequip_tried = True
+            if try_reequip_verified(page):
+                log.info("✅ Надел кирку, включил охоту — продолжаю сбор.")
+                return
+            log.warning(">>> Не смог надеть кирку сам — верни её в руки вручную. Бот ждёт и зовёт.")
+            alert_beep(5)
+
+        # повторяем просьбу и зовём звуком (пока не вытащили)
+        if not thanked and (time.time() - last_post) > SPLINTER_REPEAT_EVERY:
+            request_splinter_help(page)
+            alert_beep(3)
+            last_post = time.time()
+            log.info("Повторил просьбу (заноза ещё не вылечена).")
+        # вернулся ли инструмент в руки?
+        res = _test_can_gather(page)
+        if res is True:
+            log.info("✅ Инструмент снова в руках — продолжаю сбор.")
+            return
+        time.sleep(SPLINTER_POLL)
 
 
 # =========================================================================
@@ -960,6 +1622,30 @@ def _capture_point(ctx, page, clicks, label):
         return [pt[0], pt[1]]
     log.info("  → пропущено.")
     return None
+
+
+def _capture_multi(ctx, page, clicks, label, max_n=8):
+    """Снять НЕСКОЛЬКО точек подряд: кликай зону → ENTER, повторяй.
+    Пустой ENTER — закончить этот список. Возвращает список [[x,y], ...]."""
+    pts = []
+    print("\n>>> %s" % label)
+    print(">>> Кликай по ОДНОЙ зоне и жми ENTER. Пустой ENTER (без клика) — закончить.\n",
+          flush=True)
+    while len(pts) < max_n:
+        _install_calib(page)
+        clicks.clear()
+        print(">>> Зона #%d — кликни и ENTER (пустой ENTER — закончить):" % (len(pts) + 1),
+              flush=True)
+        wait_enter_keep_alive(ctx)
+        if clicks:
+            pt = clicks[-1]
+            pts.append([pt[0], pt[1]])
+            log.info("  → зона #%d (%d, %d)", len(pts), pt[0], pt[1])
+        else:
+            break
+    if not pts:
+        log.info("  → пропущено.")
+    return pts
 
 
 def mode_calib():
@@ -1044,6 +1730,47 @@ def mode_calib():
                 log.info("Пипетка: сохранено диапазонов цвета: %d.", len(collected))
             else:
                 log.info("Пипетка: образцы не сняты — останется пресет профессии.")
+
+        # ПИПЕТКА-ИСКЛЮЧЕНИЕ — снять цвета фона/травы/чужого, по которым НЕ кликать
+        print("\n>>> ПИПЕТКА-ИСКЛЮЧЕНИЕ (по желанию): цвета, которые НЕ надо собирать.")
+        print(">>> Если бот тыкает по траве/фону/чужим ресурсам — кликни по ним здесь,")
+        print(">>> и он занесёт эти цвета в чёрный список (яркие камни того же оттенка")
+        print(">>> при этом не пострадают — учитывается и яркость).")
+        prev_excl = zones.get("exclude_ranges", [])
+        if prev_excl:
+            print(">>> Сейчас уже есть исключений: %d." % len(prev_excl))
+        ans = read_line_keep_alive(
+            ctx, ">>> Сколько образцов ФОНА снять? (0 — пропустить; 'c' — очистить старые): ")
+        if ans.strip().lower() == "c":
+            zones.pop("exclude_ranges", None)
+            log.info("Список цветов-исключений очищен.")
+        else:
+            try:
+                n_excl = int(ans) if ans else 0
+            except ValueError:
+                n_excl = 0
+            if n_excl > 0:
+                excl = list(prev_excl)
+                for i in range(n_excl):
+                    pt = _capture_point(
+                        ctx, page, clicks,
+                        "образец фона #%d — кликни по тому, что НЕ надо собирать "
+                        "(ENTER без клика — стоп)" % (i + 1))
+                    if not pt:
+                        break
+                    try:
+                        full = screenshot_bgr(page)
+                        rngs = sample_exclude_ranges_at(full, pt[0], pt[1])
+                    except Exception as ex:
+                        log.warning("Пипетка-исключение не сработала: %s", ex)
+                        rngs = []
+                    if rngs:
+                        excl.extend(rngs)
+                        log.info("  Исключён цвет (HSV): %s", rngs)
+                if excl:
+                    zones["exclude_ranges"] = excl
+                    log.info("Пипетка-исключение: всего цветов-исключений: %d.", len(excl))
+
         # применить выбор сразу, чтобы дальнейшие этапы работали с нужным ресурсом
         set_active_profession(zones["profession"], custom_ranges=zones.get("resource_ranges"))
 
@@ -1078,18 +1805,50 @@ def mode_calib():
 
         # 4) ЗОНЫ БОЯ
         print("\n>>> ЭТАП 4. ЗОНЫ БОЯ (нужно быть В БОЮ; нет боя — пропускай ENTER).")
-        b = _capture_point(ctx, page, clicks, "ЗОНУ БЛОКА на колесе")
-        if b:
-            zones["block"] = b
-        a = _capture_point(ctx, page, clicks, "ЗОНУ АТАКИ на колесе")
-        if a:
-            zones["attack"] = a
+        print(">>> Можно снять НЕСКОЛЬКО зон атаки и блока — бот будет их чередовать.")
+        blocks = _capture_multi(ctx, page, clicks, "ЗОНЫ БЛОКА на колесе (одну или несколько)")
+        if blocks:
+            zones["blocks"] = blocks
+            zones["block"] = blocks[0]                  # совместимость со старым форматом
+        attacks = _capture_multi(ctx, page, clicks, "ЗОНЫ АТАКИ на колесе (одну или несколько)")
+        if attacks:
+            zones["attacks"] = attacks
+            zones["attack"] = attacks[0]
+        if attacks and len(attacks) > 1:
+            ans = read_line_keep_alive(
+                ctx, ">>> Как бить по зонам? 1) по кругу — комбинация  2) случайно  [1]: ")
+            zones["attack_mode"] = "random" if ans.strip() == "2" else "cycle"
+            log.info("Режим атаки: %s.", zones["attack_mode"])
         e = _capture_point(ctx, page, clicks, "кнопку «выход» после победы")
         if e:
             zones["exit"] = e
         h = _capture_point(ctx, page, clicks, "кнопку «В охоту» (можно пропустить)")
         if h:
             zones["hunt"] = h
+
+        # 5) ЗАНОЗА: авто-возврат кирки (рюкзак / вкладка «вещи» / кирка / «надеть» / охота)
+        print("\n>>> ЭТАП 5. ЗАНОЗА — АВТО-ВОЗВРАТ КИРКИ (можно пропустить ENTER).")
+        print(">>> Чтобы после лечения занозы бот сам надел кирку и включил охоту.")
+        print(">>> Порядок: рюкзак → вкладка «вещи» → навести на кирку → «надеть» → охота.")
+        bag = _capture_point(ctx, page, clicks, "кнопку РЮКЗАК (которой открываешь рюкзак)")
+        if bag:
+            zones["bag"] = bag
+        print(">>> Теперь ОТКРОЙ рюкзак и перейди на вкладку «ВЕЩИ» (где лежит кирка).")
+        tab = _capture_point(ctx, page, clicks, "вкладку «ВЕЩИ» (вторая вкладка рюкзака)")
+        if tab:
+            zones["tab"] = tab
+        pick = _capture_point(ctx, page, clicks,
+                              "КИРКУ в рюкзаке (просто кликни по ней — сюда бот будет наводить курсор)")
+        if pick:
+            zones["pick"] = pick
+        print(">>> Наведи курсор на кирку, чтобы появилась надпись «надеть», и кликни по ней.")
+        equip = _capture_point(ctx, page, clicks, "надпись «НАДЕТЬ» (появляется при наведении на кирку)")
+        if equip:
+            zones["equip"] = equip
+        hunt_mode = _capture_point(ctx, page, clicks,
+                                   "кнопку «РЕЖИМ ОХОТЫ» (перейти к добыче после надевания)")
+        if hunt_mode:
+            zones["hunt_mode"] = hunt_mode
 
         try:
             save_zones(zones)
@@ -1110,12 +1869,15 @@ def gather_visible(page, scroll_pos, total):
     now = time.time()
     _prune(_failed_points, now, 3)
     _prune(_recent_points, now, 2)
-    pts = find_resource(crop_map(screenshot_bgr(page)))
-    if len(pts) > MAX_PER_CYCLE:
-        log.info("Слишком много пятен (%d) — вероятно анимация, пропускаю кадр.", len(pts))
+    scored = find_resource_scored(crop_map(screenshot_bgr(page)))
+    if len(scored) > MAX_PER_CYCLE:
+        log.info("Слишком много пятен (%d) — вероятно анимация, пропускаю кадр.", len(scored))
         return total, False
+    # кликаем только самые «уверенные» пятна — так реже промахи по фону
+    pts = [(d["cx"], d["cy"]) for d in scored[:DETECT_MAX_RESULTS]]
     if pts:
-        log.info("Вижу ресурсов (%s): %d шт. (прокрутка %d).", ACTIVE_PROF, len(pts), scroll_pos)
+        log.info("Вижу ресурсов (%s): %d, беру топ-%d по уверенности (прокрутка %d).",
+                 ACTIVE_PROF, len(scored), len(pts), scroll_pos)
     for (cx, cy) in pts:
         px, py = map_to_page(cx, cy)
         now = time.time()
@@ -1185,9 +1947,18 @@ def mode_run():
             log.warning("Кнопка «закрыть» НЕ откалибрована — прогони --calib (этап 3).")
         started = time.time()
         cycle = 0
-        scroll_pos = 0
+        scroll_pos = 0        # накопленное смещение прокрутки (ключ для чёрного списка)
+        scroll_dir = 1        # текущее направление «маятника»: +1 вниз, −1 вверх
         next_long = random.randint(*LONG_BREAK_EVERY)
         total = 0
+        # базовый счётчик «занозы» в чате — реагируем только на НОВОЕ появление
+        splinter_seen = 0
+        if SPLINTER_ENABLED:
+            try:
+                splinter_seen = chat_splinter_count(page)
+            except Exception:
+                splinter_seen = 0
+            log.info("Слежу за занозой в чате (маркер «%s»).", SPLINTER_CHAT_KEYWORD)
         try:
             while True:
                 if (time.time() - started) / 60.0 >= MAX_RUNTIME_MIN:
@@ -1195,6 +1966,23 @@ def mode_run():
                     break
                 cycle += 1
                 close_if_blocking(page)
+
+                # ЗАНОЗА: новое оповещение в чате → пауза, просьба в чат, ждём лечения
+                if SPLINTER_ENABLED:
+                    try:
+                        cnt = chat_splinter_count(page)
+                    except Exception:
+                        cnt = splinter_seen
+                    if cnt > splinter_seen:
+                        handle_splinter(page)
+                        try:
+                            splinter_seen = chat_splinter_count(page)  # перебазируемся
+                        except Exception:
+                            splinter_seen = cnt
+                        time.sleep(random.uniform(*CYCLE_PAUSE))
+                        continue
+                    splinter_seen = cnt
+
                 if FIGHT_ENABLED and in_fight(page):
                     do_fight(page)
                     time.sleep(random.uniform(*CYCLE_PAUSE))
@@ -1210,13 +1998,22 @@ def mode_run():
                     time.sleep(random.uniform(*CYCLE_PAUSE))
                     continue
 
-                if MAP_SCROLL_ENABLED and MAP_SCROLL_POSITIONS > 1:
-                    if scroll_pos < MAP_SCROLL_POSITIONS - 1:
-                        if scroll_map(page, MAP_SCROLL_DELTA):
-                            scroll_pos += 1
+                if MAP_SCROLL_ENABLED:
+                    # предел размаха: жёсткий MAP_SCROLL_MAX_POS, плюс необяз.
+                    # MAP_SCROLL_POSITIONS (совместимость) — что меньше, то и предел
+                    limit = MAP_SCROLL_MAX_POS
+                    if MAP_SCROLL_POSITIONS and MAP_SCROLL_POSITIONS > 1:
+                        limit = min(limit, MAP_SCROLL_POSITIONS - 1)
+                    moved = scroll_step_adaptive(page, scroll_dir)
+                    if moved and abs(scroll_pos + scroll_dir) <= limit:
+                        scroll_pos += scroll_dir
                     else:
-                        scroll_map(page, -MAP_SCROLL_DELTA * (MAP_SCROLL_POSITIONS - 1))
-                        scroll_pos = 0
+                        # уперлись в край карты (или дошли до предела) → разворот
+                        if not moved:
+                            log.info("Край карты (прокрутка %d) — разворачиваюсь.", scroll_pos)
+                        scroll_dir = -scroll_dir
+                        if scroll_step_adaptive(page, scroll_dir):
+                            scroll_pos += scroll_dir
 
                 time.sleep(random.uniform(*CYCLE_PAUSE))
                 if cycle >= next_long:
@@ -1231,14 +2028,59 @@ def mode_run():
             ctx.close()
 
 
+def mode_reequip_test():
+    """Разово прогнать возврат кирки (рюкзак→вещи→навести→надеть→охота) для проверки
+    калибровки Этапа 5. Смотри в игре, всё ли открывается и надевается."""
+    with sync_playwright() as p:
+        ctx, page = open_and_wait(
+            p, "ТЕСТ ВОЗВРАТА КИРКИ. Убери кирку в рюкзак (или просто проверь навигацию), затем ENTER.")
+        apply_saved_config()
+        t = get_reequip_targets()
+        log.info("Точки: рюкзак=%s вкладка=%s кирка=%s надеть=%s охота=%s",
+                 t["bag"], t["tab"], t["pick"], t["equip"], t["hunt_mode"])
+        if not (t["bag"] and t["pick"] and t["equip"]):
+            log.warning("Не хватает точек (нужны минимум рюкзак/кирка/надеть). Пройди --calib Этап 5.")
+            ctx.close()
+            return
+        log.info("Выполняю последовательность возврата кирки…")
+        reequip_tool(page)
+        time.sleep(1.5)
+        ok = _test_can_gather(page)
+        if ok is True:
+            log.info("✅ Похоже, кирка надета — добыча проходит.")
+        else:
+            log.info("Проверь глазами: открылся ли рюкзак, та ли вкладка, появилась ли «надеть». "
+                     "Если точка мимо — перепройди нужный шаг в --calib (Этап 5).")
+        print("\n>>> Посмотри результат в игре. ENTER — закрыть.\n", flush=True)
+        wait_enter_keep_alive(ctx)
+        ctx.close()
+
+
 def main():
     ap = argparse.ArgumentParser(description="Автосбор ресурсов + авто-бой (Playwright).")
     ap.add_argument("--login", action="store_true", help="только войти (сохранить сессию)")
     ap.add_argument("--calib", action="store_true", help="мастер калибровки (профессия/карта/добыча/закрыть/бой)")
     ap.add_argument("--debug", action="store_true", help="скриншот + DOM + слепок боя")
+    ap.add_argument("--testkirka", action="store_true",
+                    help="разово проверить возврат кирки (рюкзак→вещи→надеть→охота)")
     ap.add_argument("--prof", metavar="ИМЯ",
                     help="выбрать профессию (%s) и сохранить в конфиг" % "/".join(PROFESSIONS))
+    ap.add_argument("--sens", metavar="ЧИСЛО", type=float,
+                    help="чувствительность распознавания: <1 мягче (видит больше), "
+                         ">1 строже (меньше ложных). Норма 1.0. Сохраняется в конфиг.")
     args = ap.parse_args()
+
+    # --sens: сохранить чувствительность распознавания в fight_zones.json
+    if args.sens is not None:
+        if not (0.2 <= args.sens <= 4.0):
+            print("Чувствительность должна быть в диапазоне 0.2..4.0 (норма 1.0).")
+            return
+        z = load_zones() or {}
+        z["sensitivity"] = round(float(args.sens), 2)
+        save_zones(z)
+        log.info("Чувствительность распознавания сохранена: %.2f (%s).", z["sensitivity"],
+                 "мягче — видит больше" if z["sensitivity"] < 1 else
+                 ("строже — меньше ложных" if z["sensitivity"] > 1 else "норма"))
 
     # --prof: сохранить выбранную профессию в fight_zones.json (можно вместе с др. режимом)
     if args.prof:
@@ -1260,6 +2102,8 @@ def main():
         mode_calib()
     elif args.debug:
         mode_debug()
+    elif args.testkirka:
+        mode_reequip_test()
     else:
         mode_run()
 
