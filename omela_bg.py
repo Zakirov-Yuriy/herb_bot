@@ -445,6 +445,36 @@ def apply_saved_config():
     log.info("Добыча: %d клик(а/ов) на ресурс.", GATHER_CLICKS)
 
 
+def apply_run_config():
+    """Подтянуть настройки ЗАПУСКА из fight_zones.json (их задаёт меню launcher.py).
+
+    Все ключи опциональны и лежат под "run_config": если ключа нет — остаётся
+    значение-константа из кода. Профессия/чувствительность грузит apply_saved_config
+    (ключи верхнего уровня "profession"/"sensitivity"), тут — только вкл/выкл и числа.
+    """
+    global MAX_RUNTIME_MIN, CRAFT_ENABLED, CRAFT_EVERY_SEC, CRAFT_ON_START
+    global FIGHT_ENABLED, SPLINTER_ENABLED
+    cfg = (load_zones() or {}).get("run_config")
+    if not isinstance(cfg, dict):
+        return
+    v = cfg.get("max_runtime_min")
+    if isinstance(v, (int, float)) and v > 0:
+        MAX_RUNTIME_MIN = int(v)
+    v = cfg.get("craft_every_sec")
+    if isinstance(v, (int, float)) and v > 0:
+        CRAFT_EVERY_SEC = int(v)
+    for key, name in (("craft_enabled", "CRAFT_ENABLED"),
+                      ("craft_on_start", "CRAFT_ON_START"),
+                      ("fight_enabled", "FIGHT_ENABLED"),
+                      ("splinter_enabled", "SPLINTER_ENABLED")):
+        if isinstance(cfg.get(key), bool):
+            globals()[name] = cfg[key]
+    log.info("Настройки меню: время=%d мин | крафт=%s (кажд.%dс, старт=%s) | бой=%s | лечение=%s.",
+             MAX_RUNTIME_MIN, "вкл" if CRAFT_ENABLED else "выкл", CRAFT_EVERY_SEC,
+             "да" if CRAFT_ON_START else "нет",
+             "вкл" if FIGHT_ENABLED else "выкл", "вкл" if SPLINTER_ENABLED else "выкл")
+
+
 def open_context(p):
     launch_kwargs = dict(
         user_data_dir=USER_DATA, headless=False, viewport=VIEWPORT, device_scale_factor=1,
@@ -2122,6 +2152,7 @@ def mode_run():
         ctx, page = open_and_wait(
             p, "Войди в игру и встань на локацию с нужным ресурсом. После ENTER начнётся сбор.")
         apply_saved_config()
+        apply_run_config()
         log.info("Старт сбора. Стоп: Ctrl+C.")
         if FIGHT_ENABLED:
             block, attack, exit_t, hunt_t = resolve_fight_targets()
