@@ -26,7 +26,8 @@ omela_bg.py — фоновый автосбор РЕСУРСОВ + авто-бо
   python omela_bg.py --sens 0.8       # чувствительность: <1 мягче (видит больше), >1 строже
   python omela_bg.py --calib          # МАСТЕР: профессия/пипетка/исключение, карта, добыча, «закрыть», бой
   python omela_bg.py --debug          # скриншот + DOM + карта распознавания + слепок боя
-  python omela_bg.py                  # рабочий режим
+  python omela_bg.py --testcraft      # разово проверить авто-крафт (профессия→«Создать»→«Вернуться»)
+  python omela_bg.py                  # рабочий режим (сбор + бой + авто-крафт рецептов)
 
 Остановка: Ctrl+C в терминале.
 
@@ -174,6 +175,32 @@ LONG_BREAK_EVERY = (15, 30)
 LONG_BREAK       = (20.0, 60.0)
 MAX_RUNTIME_MIN  = 120
 
+# =========================================================================
+#        АВТО-КРАФТ РЕЦЕПТОВ (панель профессии → кнопки «Создать»)
+# =========================================================================
+# Пока идёт сбор ресурсов, бот периодически заходит в панель профессии
+# (кнопка «профессии» на боковой панели) и жмёт «Создать» у каждого рецепта
+# из «Избранных». Рецепты обновляются раз в несколько минут, поэтому крафт
+# запускается по таймеру. После каждого «Создать» экран сам перезагружается —
+# бот ждёт, потом жмёт следующий рецепт. В конце — «Вернуться» к сбору.
+#
+# Точки снимаются в мастере --calib (ЭТАП 6) и хранятся в fight_zones.json:
+#   "craft_open"    — кнопка, открывающая панель профессии;
+#   "craft_creates" — список кнопок «Создать» (по одной на рецепт);
+#   "craft_back"    — кнопка «Вернуться» (выход из панели к сбору).
+CRAFT_ENABLED         = True          # включить авто-создание рецептов
+CRAFT_EVERY_SEC       = 330           # как часто крафтить, сек (5 мин 30 сек)
+CRAFT_ON_START        = True          # сразу крафтить при запуске бота
+CRAFT_OPEN_WAIT       = (1.2, 2.2)    # ждём открытия панели профессии
+CRAFT_RELOAD_WAIT     = (1.6, 2.6)    # ждём перезагрузки экрана после «Создать»
+CRAFT_AFTER_BACK_WAIT = (1.0, 1.8)    # пауза после возврата к сбору
+CRAFT_CLICK_GAP       = (0.4, 0.8)    # микропауза перед нажатием каждого «Создать»
+
+# Внутреннее состояние авто-крафта (глобальное — чтобы цикл сбора мог прерваться
+# ровно в момент, когда подошло время крафта, а не ждать конца всего цикла).
+_CRAFT_ON   = False   # включён ли авто-крафт в этом запуске
+_NEXT_CRAFT = None     # время (time.time()) следующего захода за «Создать»
+
 # Не тыкать повторно куст, который только что начали добывать (иначе добыча отменится)
 RECLICK_COOLDOWN = 9.0         # сек: столько не кликаем по той же точке снова
 RECLICK_RADIUS   = 26          # px
@@ -246,7 +273,21 @@ POPUP_SEARCH_Y  = (230, 660)
 # повторяет) → зовёт тебя звуком вернуть инструмент в руки → как только добыча
 # снова проходит (инструмент в руках), продолжает сам.
 SPLINTER_ENABLED       = True
-SPLINTER_CHAT_KEYWORD  = "заноз"     # что искать в чате (подстрока, регистр не важен)
+SPLINTER_CHAT_KEYWORD  = "заноз"     # слово-маркер занозы (регистр не важен)
+# ВАЖНО: реагируем ТОЛЬКО на СИСТЕМНУЮ строку игры о СВОЕЙ занозе — она всегда
+# начинается с «Вы …» (как «Вы получили вещь…», «Вы создали…»). Это отсекает:
+#   • ники игроков (напр. «Заноза-Буля») в списке жителей и в чате;
+#   • чужие и личные сообщения — в них есть знак «»» («Ник » Ник: текст»);
+#   • чужие/свои просьбы «дерните/вытащите занозу»;
+#   • строку лечения «Вы избавились от занозы» (в ней есть «избавил»).
+# Строка засчитывается как «моя заноза», если: начинается с одного из
+# SPLINTER_SELF_PREFIXES, содержит «заноз», НЕ содержит «»», слов-просьб и слов
+# лечения. Если у тебя другой текст сообщения о занозе — допиши сюда его начало.
+SPLINTER_SELF_PREFIXES = ("вы ", "вы,", "вы получ", "вы посад", "вы загна",
+                          "вы занозил", "у вас", "вам ")
+SPLINTER_REQUEST_WORDS = ("дерн", "дёрн", "вытащ", "вытян", "помог", "прош",
+                          "пожалуйста", "плиз", "плз")
+SPLINTER_HEAL_WORDS    = ("избавил", "избавля", "избавилис")
 SPLINTER_MESSAGE       = "дерните занозу пожалуйста"  # текст просьбы (можно добавить :mol:)
 SPLINTER_PM_EACH       = True        # True: писать ЛИЧНО каждому игроку локации;
                                      # False: одно сообщение в общий чат
@@ -1297,9 +1338,39 @@ def alert_beep(n=4):
             time.sleep(0.2)
 
 
+def _is_my_splinter_line(line):
+    """True, если строка — СИСТЕМНОЕ сообщение игры о МОЕЙ занозе (а не чужой ник,
+    не личное/чужое сообщение, не просьба и не строка лечения)."""
+    import re
+    if not line:
+        return False
+    low = line.lower()
+    if SPLINTER_CHAT_KEYWORD not in low:          # нет слова «заноз» — точно не то
+        return False
+    if "»" in line or ">>" in line:               # «Ник » Ник: …» — личное/чужое, пропускаем
+        return False
+    for bad in SPLINTER_HEAL_WORDS:               # «Вы избавились от занозы» — это лечение
+        if bad in low:
+            return False
+    for bad in SPLINTER_REQUEST_WORDS:            # «дерните/вытащите занозу» — просьба
+        if bad in low:
+            return False
+    body = re.sub(r"^\s*\d{1,2}:\d{2}\s*", "", low)   # отрезать ведущее время «13:47 »
+    body = body.lstrip()
+    return any(body.startswith(pfx) for pfx in SPLINTER_SELF_PREFIXES)
+
+
 def chat_splinter_count(page):
-    """Сколько раз слово-маркер «заноз…» встречается сейчас в чате (все фреймы)."""
-    return _count_text_in_frames(page, SPLINTER_CHAT_KEYWORD)
+    """Сколько СИСТЕМНЫХ строк «Вы …заноз…» (моя заноза) сейчас видно в чате.
+    Считаем ТОЛЬКО свою занозу — ники игроков, чужие сообщения и просьбы бота
+    (в них есть «»») и строку лечения не учитываем."""
+    try:
+        text = read_chat_text(page)
+    except Exception:
+        text = ""
+    if not text:
+        return 0
+    return sum(1 for line in text.splitlines() if _is_my_splinter_line(line))
 
 
 def read_chat_text(page):
@@ -1456,6 +1527,62 @@ def get_reequip_targets():
     return {k: z.get(k) for k in ("bag", "tab", "pick", "equip", "hunt_mode")}
 
 
+def get_craft_targets():
+    """Точки авто-крафта рецептов из калибровки (Этап 6):
+    open  — кнопка, открывающая панель профессии;
+    creates — список кнопок «Создать» (по одной на рецепт);
+    back  — кнопка «Вернуться» к сбору."""
+    z = load_zones() or {}
+    return {
+        "open":    z.get("craft_open"),
+        "creates": z.get("craft_creates") or [],
+        "back":    z.get("craft_back"),
+    }
+
+
+def craft_ready():
+    """Настроен ли авто-крафт (есть кнопка открытия панели и хотя бы одна «Создать»)."""
+    if not CRAFT_ENABLED:
+        return False
+    t = get_craft_targets()
+    return bool(t["open"] and t["creates"])
+
+
+def craft_due():
+    """Подошло ли время авто-крафта (проверяется и внутри цикла сбора, чтобы не
+    опаздывать на длинных добычах)."""
+    return bool(_CRAFT_ON and _NEXT_CRAFT is not None and time.time() >= _NEXT_CRAFT)
+
+
+def craft_recipes(page):
+    """Зайти в панель профессии и нажать «Создать» у каждого рецепта.
+    После каждого «Создать» экран сам перезагружается — ждём и жмём следующий.
+    В конце — «Вернуться» к сбору. True — выполнено, False — не настроено."""
+    t = get_craft_targets()
+    if not (t["open"] and t["creates"]):
+        log.info("Авто-крафт не настроен (Этап 6 калибровки) — пропускаю.")
+        return False
+    # если висит окно-ошибка — сначала закрыть, иначе клики уйдут «в молоко»
+    close_if_blocking(page)
+    log.info("Авто-крафт: открываю панель профессии…")
+    click_point(page, t["open"])
+    time.sleep(random.uniform(*CRAFT_OPEN_WAIT))
+    made = 0
+    for i, pt in enumerate(t["creates"], 1):
+        time.sleep(random.uniform(*CRAFT_CLICK_GAP))
+        click_point(page, pt)                       # нажать «Создать» у рецепта #i
+        made += 1
+        log.info("  → «Создать» рецепт #%d %s — жду перезагрузку экрана.", i, pt)
+        # экран сам перезагружается после «Создать» — ждём, потом следующий рецепт
+        time.sleep(random.uniform(*CRAFT_RELOAD_WAIT))
+        close_if_blocking(page)
+    if t["back"]:
+        click_point(page, t["back"])                # «Вернуться» к сбору
+        time.sleep(random.uniform(*CRAFT_AFTER_BACK_WAIT))
+    log.info("Авто-крафт: нажал «Создать» %d раз, вернулся к сбору.", made)
+    return True
+
+
 def reequip_tool(page):
     """Рюкзак → вкладка «вещи» → навести на кирку → клик «надеть» → режим охоты.
     Работает только если точки откалиброваны (Этап 5). Возвращает False, если нет."""
@@ -1519,6 +1646,14 @@ def _test_can_gather(page):
 def handle_splinter(page):
     """Обработать занозу: пауза сбора, просьба в чат (+повтор), звук; ждём, пока
     игрок вернёт инструмент и добыча снова заработает."""
+    # для прозрачности — покажем, на какую именно системную строку среагировали
+    try:
+        trig = [ln.strip() for ln in read_chat_text(page).splitlines()
+                if _is_my_splinter_line(ln)]
+        if trig:
+            log.warning("🩹 ЗАНОЗА! Сработала строка: «%s»", trig[-1])
+    except Exception:
+        pass
     log.warning("🩹 ЗАНОЗА! Инструмент убран в рюкзак — сбор на паузе.")
     request_splinter_help(page)
     log.warning(">>> ВЕРНИ ИНСТРУМЕНТ В РУКИ (надень кирку → режим охоты), когда занозу "
@@ -1850,6 +1985,31 @@ def mode_calib():
         if hunt_mode:
             zones["hunt_mode"] = hunt_mode
 
+        # 6) АВТО-КРАФТ РЕЦЕПТОВ (панель профессии → «Создать» у каждого рецепта)
+        print("\n>>> ЭТАП 6. АВТО-КРАФТ РЕЦЕПТОВ (можно пропустить ENTER).")
+        print(">>> Бот сам будет периодически (каждые ~%d сек) заходить в панель" % CRAFT_EVERY_SEC)
+        print(">>> профессии и жать «Создать» у рецептов, потом возвращаться к сбору.")
+        print(">>> Сначала укажи кнопку, которая ОТКРЫВАЕТ панель профессии.")
+        c_open = _capture_point(ctx, page, clicks,
+                                "кнопку «ПРОФЕССИИ» (открывает панель с рецептами)")
+        if c_open:
+            zones["craft_open"] = c_open
+            print("\n>>> Теперь ОТКРОЙ панель профессии (нажми ту кнопку в игре),")
+            print(">>> чтобы стали видны кнопки «Создать» у рецептов.")
+            creates = _capture_multi(
+                ctx, page, clicks,
+                "кнопки «СОЗДАТЬ» у КАЖДОГО рецепта (по очереди, сверху вниз)")
+            if creates:
+                zones["craft_creates"] = creates
+                log.info("Кнопок «Создать» снято: %d.", len(creates))
+            c_back = _capture_point(
+                ctx, page, clicks,
+                "кнопку «ВЕРНУТЬСЯ» (выход из панели профессии к сбору)")
+            if c_back:
+                zones["craft_back"] = c_back
+        else:
+            print(">>> Кнопка профессии не снята — авто-крафт останется выключенным.")
+
         try:
             save_zones(zones)
             print("\n================ ГОТОВО ================")
@@ -1879,6 +2039,11 @@ def gather_visible(page, scroll_pos, total):
         log.info("Вижу ресурсов (%s): %d, беру топ-%d по уверенности (прокрутка %d).",
                  ACTIVE_PROF, len(scored), len(pts), scroll_pos)
     for (cx, cy) in pts:
+        # подошло время авто-крафта — прерываем сбор, чтобы не опоздать
+        # (иначе длинная добыча могла бы задержать крафт на минуты)
+        if craft_due():
+            log.info("Пора крафтить — прерываю текущий сбор.")
+            break
         px, py = map_to_page(cx, cy)
         now = time.time()
         # уже добываем этот куст — не тыкаем повторно (иначе добыча отменится)
@@ -1951,6 +2116,25 @@ def mode_run():
         scroll_dir = 1        # текущее направление «маятника»: +1 вниз, −1 вверх
         next_long = random.randint(*LONG_BREAK_EVERY)
         total = 0
+
+        # АВТО-КРАФТ: таймер захода в панель профессии за «Создать»
+        # (глобальные _CRAFT_ON / _NEXT_CRAFT — чтобы gather_visible мог прерваться)
+        global _CRAFT_ON, _NEXT_CRAFT
+        _CRAFT_ON = craft_ready()
+        do_craft = _CRAFT_ON
+        _NEXT_CRAFT = None
+        if do_craft:
+            ct = get_craft_targets()
+            log.info("Авто-крафт включён: каждые ~%d сек жму «Создать» у %d рецепт(ов).",
+                     CRAFT_EVERY_SEC, len(ct["creates"]))
+            if CRAFT_ON_START:
+                try:
+                    craft_recipes(page)          # сразу крафтим при запуске
+                except Exception as e:
+                    log.warning("Авто-крафт при старте не удался: %s", e)
+            _NEXT_CRAFT = time.time() + CRAFT_EVERY_SEC
+        elif CRAFT_ENABLED:
+            log.info("Авто-крафт не настроен (Этап 6 калибровки) — крафтить не буду.")
         # базовый счётчик «занозы» в чате — реагируем только на НОВОЕ появление
         splinter_seen = 0
         if SPLINTER_ENABLED:
@@ -1990,6 +2174,17 @@ def mode_run():
                 if FIGHT_ENABLED and stats_screen_present(page):
                     _, _, _, hunt_t = resolve_fight_targets()
                     return_to_hunt(page, hunt_t)
+                    time.sleep(random.uniform(*CYCLE_PAUSE))
+                    continue
+
+                # АВТО-КРАФТ: подошло время — заходим в профессию и жмём «Создать».
+                # (В бой не лезем: бой проверен выше и делает continue, сюда не дойдём.)
+                if craft_due():
+                    try:
+                        craft_recipes(page)
+                    except Exception as e:
+                        log.warning("Авто-крафт не удался: %s", e)
+                    _NEXT_CRAFT = time.time() + CRAFT_EVERY_SEC
                     time.sleep(random.uniform(*CYCLE_PAUSE))
                     continue
 
@@ -2056,6 +2251,30 @@ def mode_reequip_test():
         ctx.close()
 
 
+def mode_craft_test():
+    """Разово прогнать авто-крафт (панель профессии → «Создать» у рецептов → «Вернуться»)
+    для проверки калибровки Этапа 6. Смотри в игре, всё ли нажимается."""
+    with sync_playwright() as p:
+        ctx, page = open_and_wait(
+            p, "ТЕСТ АВТО-КРАФТА. Встань на локацию (как при сборе), затем ENTER.")
+        apply_saved_config()
+        t = get_craft_targets()
+        log.info("Точки: профессии=%s создать=%s вернуться=%s",
+                 t["open"], t["creates"], t["back"])
+        if not (t["open"] and t["creates"]):
+            log.warning("Не хватает точек (нужны кнопка профессии и хотя бы одна «Создать»). "
+                        "Пройди --calib Этап 6.")
+            ctx.close()
+            return
+        log.info("Выполняю последовательность авто-крафта…")
+        craft_recipes(page)
+        log.info("Готово. Проверь в игре: открылась ли панель, нажались ли все «Создать», "
+                 "вернулся ли бот к сбору. Если точка мимо — перепройди --calib (Этап 6).")
+        print("\n>>> Посмотри результат в игре. ENTER — закрыть.\n", flush=True)
+        wait_enter_keep_alive(ctx)
+        ctx.close()
+
+
 def main():
     ap = argparse.ArgumentParser(description="Автосбор ресурсов + авто-бой (Playwright).")
     ap.add_argument("--login", action="store_true", help="только войти (сохранить сессию)")
@@ -2063,6 +2282,8 @@ def main():
     ap.add_argument("--debug", action="store_true", help="скриншот + DOM + слепок боя")
     ap.add_argument("--testkirka", action="store_true",
                     help="разово проверить возврат кирки (рюкзак→вещи→надеть→охота)")
+    ap.add_argument("--testcraft", action="store_true",
+                    help="разово проверить авто-крафт (профессия→«Создать»→«Вернуться»)")
     ap.add_argument("--prof", metavar="ИМЯ",
                     help="выбрать профессию (%s) и сохранить в конфиг" % "/".join(PROFESSIONS))
     ap.add_argument("--sens", metavar="ЧИСЛО", type=float,
@@ -2104,6 +2325,8 @@ def main():
         mode_debug()
     elif args.testkirka:
         mode_reequip_test()
+    elif args.testcraft:
+        mode_craft_test()
     else:
         mode_run()
 
