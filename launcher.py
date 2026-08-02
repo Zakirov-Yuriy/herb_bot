@@ -158,6 +158,8 @@ class App(tk.Tk):
                    command=self.save_only).pack(side="left", padx=4)
         ttk.Button(btns, text="Калибровка",
                    command=self.run_calib).pack(side="left", padx=4)
+        ttk.Button(btns, text="Очистить игнор",
+                   command=self.clear_excludes).pack(side="left", padx=4)
 
         self.status = ttk.Label(root, text="", foreground="#0a0")
         self.status.grid(row=5, column=0, sticky="w", padx=10)
@@ -232,6 +234,32 @@ class App(tk.Tk):
         if self._launch_bot():
             self.status.config(text="Бот запущен в отдельном окне. Нажми там ENTER для старта.",
                                foreground="#0a0")
+
+    def clear_excludes(self):
+        """Очистить чёрный список цветов-исключений (exclude_ranges).
+
+        Нужно, когда бот перестал собирать ресурс: часто причина в том, что в
+        игнор случайно попал цвет самого ресурса, и бот выбрасывает все находки.
+        Профессию, снятый цвет ресурса и точки калибровки НЕ трогаем."""
+        z = load_zones()
+        n = len(z.get("exclude_ranges") or [])
+        if n == 0:
+            self.status.config(text="Чёрный список уже пуст — чистить нечего.",
+                               foreground="#0a0")
+            return
+        if not messagebox.askyesno(
+                "Очистить игнор?",
+                "В чёрном списке сейчас %d цвет(ов)-исключений.\n\n"
+                "Очистить их? Это часто чинит проблему «бот не собирает ресурс».\n"
+                "Профессия, цвет ресурса и точки калибровки останутся на месте." % n):
+            return
+        try:
+            z.pop("exclude_ranges", None)
+            save_zones(z)
+            self.status.config(text="Игнор очищен (%d цвет(ов) удалено) ✓ Можно запускать." % n,
+                               foreground="#0a0")
+        except Exception as e:
+            messagebox.showerror("Ошибка", "Не удалось очистить:\n%s" % e)
 
     def run_calib(self):
         # сначала сохраняем (чтобы профессия для калибровки была верной), потом --calib
