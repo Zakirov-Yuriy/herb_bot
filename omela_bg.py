@@ -168,6 +168,15 @@ DETECT_MAX_RESULTS = 12     # за цикл кликаем не больше с�
 # подскажет в логе, что настроить (иначе он молча крутит карту — «не собирает»).
 DRY_STREAK_HINT = 6
 
+# «Фон-детектор» для пипетки/старта. Ресурс (камень/куст/рыба) — это КОМПАКТНОЕ
+# пятно: его цвет покрывает лишь малую долю карты. Если «цвет ресурса» покрывает
+# большую часть карты — это почти наверняка ТРАВА/ФОН, случайно снятая пипеткой.
+# Такой цвет ломает сбор: маска заливает всю карту, компактных пятен нет, и бот
+# только крутит карту. Порог = максимально допустимая доля карты (0..1). Пресеты
+# профессий покрывают ~1-3% карты, трава — десятки процентов, значит 0.15 разделяет
+# их с большим запасом.
+BG_COVERAGE_MAX = 0.15
+
 # Добыча
 GATHER_CLICKS   = 2            # сколько кликов запускают добычу (в этой игре — двойной)
 DOUBLECLICK_GAP = (0.08, 0.16)
@@ -755,6 +764,36 @@ def sample_exclude_ranges_at(full_bgr, x, y, hw=13, h_pad=10, sv_pad=55):
 def crop_map(full_bgr):
     m = MAP_REGION
     return full_bgr[m["top"]:m["top"] + m["height"], m["left"]:m["left"] + m["width"]]
+
+
+def color_coverage_over_map(full_bgr, ranges, map_region=None):
+    """Какую ДОЛЮ карты (0..1) заливает набор цветовых диапазонов `ranges`.
+
+    Нужно, чтобы отличить настоящий ресурс (компактное пятно, доля мала) от травы/
+    фона (заливает пол-карты). `ranges` — список [lo, hi], где lo/hi — [H,S,V] либо
+    np.uint8-массивы. `map_region` — dict {left,top,width,height} или None (тогда
+    берётся глобальный MAP_REGION). Вернёт 0.0, если не удалось посчитать.
+    """
+    if not ranges:
+        return 0.0
+    m = map_region or MAP_REGION
+    try:
+        y0, x0 = int(m["top"]), int(m["left"])
+        crop = full_bgr[y0:y0 + int(m["height"]), x0:x0 + int(m["width"])]
+        if crop.size == 0:
+            return 0.0
+        hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
+        mask = None
+        for lo, hi in ranges:
+            lo = np.asarray(lo, np.uint8)
+            hi = np.asarray(hi, np.uint8)
+            mm = cv2.inRange(hsv, lo, hi)
+            mask = mm if mask is None else cv2.bitwise_or(mask, mm)
+        if mask is None:
+            return 0.0
+        return float((mask > 0).sum()) / float(mask.size)
+    except Exception:
+        return 0.0
 
 
 def map_to_page(cx, cy):
@@ -2011,11 +2050,27 @@ def mode_calib():
                 except Exception as ex:
                     log.warning("Пипетка не сработала: %s", ex)
                     rngs = []
+                # ЗАЩИТА ОТ СНЯТИЯ ФОНА: если снятый цвет заливает бо́льшую часть карты,
+                # это трава/фон, а не ресурс. Сохранять его нельзя — иначе бот перестанет
+                # собирать (маска на всю карту → компактных пятен нет → только крутит).
+                if rngs:
+                    mrgn = zones.get("map_region")
+                    mrgn = ({"left": mrgn[0], "top": mrgn[1],
+                             "width": mrgn[2], "height": mrgn[3]}
+                            if mrgn and len(mrgn) == 4 else None)
+                    cov = color_coverage_over_map(full, rngs, mrgn)
+                    if cov > BG_COVERAGE_MAX:
+                        log.warning("  ⚠ Этот цвет покрывает %.0f%% карты — это похоже на "
+                                    "ТРАВУ/ФОН, а не на ресурс. НЕ сохраняю образец.", cov * 100)
+                        print(">>> ⚠ ПРОПУЩЕНО: снятый цвет заливает почти всю карту — это фон,")
+                        print(">>>   а не камень. Кликни ровно по ЦЕНТРУ яркого камня и повтори.")
+                        print(">>>   (Если хочешь просто вернуть встроенный цвет геолога — введи 0.)")
+                        rngs = []
                 if rngs:
                     collected.extend(rngs)
                     log.info("  Снят цвет (HSV-диапазон): %s", rngs)
                 else:
-                    log.info("  Не удалось снять цвет — попробуй кликнуть точнее по ресурсу.")
+                    log.info("  Цвет не снят — попробуй кликнуть точнее по яркому центру ресурса.")
             if collected:
                 zones["resource_ranges"] = collected
                 log.info("Пипетка: сохранено диапазонов цвета: %d.", len(collected))
@@ -2350,12 +2405,48 @@ def gather_visible(page, scroll_pos, total):
     return total, False, seen
 
 
+def guard_background_resource(page):
+    """Самолечение «отравленного» цвета: если снятый пипеткой цвет ресурса заливает
+    почти всю карту (трава/фон), сбор сломан — бот только крутит карту. Тогда на
+    старте ОТКАТЫВАЕМСЯ на встроенный пресет профессии на этот запуск и громко пишем
+    в лог, как починить насовсем. Возвращает True, если пришлось откатиться.
+
+    Срабатывает только когда активны СНЯТЫЕ пипеткой диапазоны (в fight_zones.json
+    есть resource_ranges). Пресеты профессий покрывают малую долю карты и не задеты.
+    """
+    z = load_zones() or {}
+    if not z.get("resource_ranges"):
+        return False
+    try:
+        full = screenshot_bgr(page)
+    except Exception:
+        return False
+    cov = color_coverage_over_map(full, RESOURCE_RANGES, MAP_REGION)
+    if cov <= BG_COVERAGE_MAX:
+        return False
+    log.warning("=" * 70)
+    log.warning("ВНИМАНИЕ: снятый цвет ресурса заливает %.0f%% карты — это ТРАВА/ФОН, "
+                "а не камень (порог %.0f%%).", cov * 100, BG_COVERAGE_MAX * 100)
+    log.warning("Именно из-за этого бот «крутит карту, но не собирает». На ЭТОТ запуск "
+                "откатываюсь на встроенный цвет профессии «%s».", ACTIVE_PROF)
+    log.warning("Чтобы починить насовсем: открой launcher.py → «Калибровка», на Шаге 1 "
+                "введи 0 в «пипетке сбора» (оставить встроенный цвет), ЛИБО кликни ровно "
+                "по центру яркого камня. Можно и просто удалить ключ resource_ranges из "
+                "fight_zones.json.")
+    log.warning("=" * 70)
+    # откат: игнорируем снятый цвет, берём пресет профессии
+    set_active_profession(z.get("profession", ACTIVE_PROF), custom_ranges=None,
+                          custom_blob=z.get("resource_blob"))
+    return True
+
+
 def mode_run():
     with sync_playwright() as p:
         ctx, page = open_and_wait(
             p, "Войди в игру и встань на локацию с нужным ресурсом. После ENTER начнётся сбор.")
         apply_saved_config()
         apply_run_config()
+        guard_background_resource(page)
         log.info("Старт сбора. Стоп: Ctrl+C.")
         if FIGHT_ENABLED:
             block, attack, exit_t, hunt_t = resolve_fight_targets()
