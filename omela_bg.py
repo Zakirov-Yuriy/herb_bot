@@ -276,6 +276,59 @@ POPUP_FILL_MIN  = 0.45
 POPUP_SEARCH_X  = (440, 1160)
 POPUP_SEARCH_Y  = (230, 660)
 
+# ---- ПОИСК КНОПКИ «закрыть» В ПОЛОСЕ ------------------------------------
+# Разные окна-ошибки («Добыча не удалась», «нет профессии», «Объект уже не
+# существует!») имеют РАЗНУЮ высоту, поэтому кнопка «закрыть» оказывается на РАЗНОЙ
+# высоте экрана. Одной откалиброванной точки мало: для окна другой высоты кнопка
+# уезжает вниз/вверх, проверка «красноты» в точке промахивается — и окно НЕ
+# закрывается (бот застревает). Поэтому кнопку ищем в вертикальной ПОЛОСЕ вокруг
+# калиброванной точки (окна по центру, X кнопки почти не гуляет) и кликаем по её
+# ФАКТИЧЕСКОМУ центру. Заголовок окна тоже красный, но он ВЫШЕ кнопки — берём самый
+# нижний подходящий красный прямоугольник в полосе.
+POPUP_BAND_UP     = 70         # на сколько px ВЫШЕ калиброванной точки искать кнопку
+POPUP_BAND_DOWN   = 95         # на сколько px НИЖЕ калиброванной точки искать кнопку
+POPUP_BAND_XTOL   = 95         # полуширина поиска по X вокруг калиброванной точки
+POPUP_BTN_W       = (40, 320)  # ширина кнопки «закрыть» (px)
+POPUP_BTN_H       = (9, 34)    # высота кнопки «закрыть» (px). НЕ выше — иначе можно
+                               # спутать с красной частью полосы прогресса (там ~46px)
+POPUP_BTN_ASPECT  = 1.8        # ширина/высота ≥ этого (кнопка горизонтальная)
+POPUP_BTN_FILL    = 0.40       # плотность заливки красным (0..1)
+POPUP_CLOSE_TRIES = 3          # сколько раз пытаться закрыть окно за один вызов
+# Отличаем КНОПКУ «закрыть» от красного ЗАГОЛОВКА окна (оба красные): над кнопкой —
+# светлое «тело» окна (бежевый фон), а над заголовком — тёмный игровой фон. Считаем
+# долю «светлых» пикселей в полоске НАД красным прямоугольником.
+POPUP_BODY_V_MIN     = 140     # яркость (V) «тела» окна ≥ этого
+POPUP_BODY_S_MAX     = 120     # насыщенность (S) «тела» окна ≤ этого (бежевый бледный)
+POPUP_ABOVE_STRIP    = 9       # высота полоски НАД кнопкой для проверки «тела» (px)
+POPUP_ABOVE_BEIGE_MIN = 0.45   # какая доля полоски над кнопкой должна быть «телом»
+# Окно-ошибка может вылезти НЕ по центру карты и на разной высоте (например, у места
+# клика). Поэтому кнопку «закрыть» ищем ПО ВСЕЙ карте, а не только у калиброванной
+# точки. Надёжный якорь: окна центрируются по ГОРИЗОНТАЛИ — центр кнопки близко к
+# центру карты по X (± POPUP_CENTER_XTOL). Это отсекает красные ники/текст на карте.
+POPUP_CENTER_XTOL    = 150     # насколько центр кнопки может отстоять от центра карты по X
+# Тело окна НАД кнопкой, где ищем зелёную полосу прогресса «Добыча». Ищем только тут
+# (внутри попапа трава закрыта бежевым), чтобы зелень карты не путалась с прогрессом.
+POPUP_BODY_HALF_W    = 170     # полуширина тела окна от центра кнопки (px)
+POPUP_BODY_UP        = 130     # на сколько px ВВЕРХ от кнопки простирается тело окна
+POPUP_TITLE_MINW     = 150     # мин. ширина красного ЗАГОЛОВКА окна (px)
+POPUP_TITLE_MINGAP   = 8       # мин. зазор между низом заголовка и верхом кнопки (px)
+POPUP_TITLE_MAXGAP   = 170     # макс. высота тела окна (заголовок ↔ кнопка, px)
+# Полосу прогресса «Добыча» отличаем от травы по тому, что рядом с ней (сверху ИЛИ
+# снизу) — светлое БЕЖЕВОЕ тело окна, а у травы вокруг снова трава (бежевого 0%).
+# Достаточно бежевого хотя бы с ОДНОЙ стороны: настоящую полосу не потеряем (не
+# отменим добычу), а траву отсечём.
+PROGRESS_BEIGE_STRIP = 6       # высота полоски над/под полосой для проверки «тела» (px)
+PROGRESS_BEIGE_MIN   = 0.30    # доля «бежевого» хотя бы с одной стороны полосы
+# Полоса добычи — это зелёная ЗАЛИВКА, рядом с которой красный «остаток» отсчёта
+# (полоса убывает) или бежевое тело окна. По этому и опознаём прогресс. Зелёная
+# заливка ПЛОТНАЯ (в отличие от тонкого зелёного текста в окне).
+PROGRESS_FILL_H      = (12, 44)  # высота зелёной заливки полосы (px)
+PROGRESS_FILL_WMIN   = 16        # мин. ширина зелёной заливки (px)
+PROGRESS_FILL_ASPECT = 1.3       # ширина/высота заливки ≥ этого
+PROGRESS_FILL_SOLID  = 0.60      # плотность зелёной заливки (0..1; текст «рыхлее»)
+PROGRESS_SIDE_W      = 55        # ширина полоски сбоку/сверху/снизу для проверки
+PROGRESS_RED_ADJ_MIN = 0.20      # доля красного сбоку от заливки (красный «остаток»)
+
 # ---- ЗАНОЗА (splinter) --------------------------------------------------
 # При долгой добыче персонаж получает «занозу»: в чат приходит оповещение, а
 # рабочий инструмент убирается из рук в рюкзак (добывать нельзя, пока не вылечат).
@@ -1034,6 +1087,318 @@ def _red_rects(full_bgr):
     return rects
 
 
+def find_close_button_near(full_bgr, target):
+    """Найти красную кнопку «закрыть» в вертикальной ПОЛОСЕ вокруг калиброванной
+    точки. Возвращает (x, y) центра кнопки или None.
+
+    Зачем: окна-ошибки разной высоты сдвигают кнопку по вертикали, и клик по одной
+    статичной точке промахивается. Ищем в полосе [target ± POPUP_BAND_*]. Заголовок
+    окна — тоже красный, но ВЫШЕ кнопки, поэтому среди подходящих прямоугольников
+    берём САМЫЙ НИЖНИЙ (у него максимальный y)."""
+    if target is None or full_bgr is None:
+        return None
+    tx, ty = int(target[0]), int(target[1])
+    H, W = full_bgr.shape[:2]
+    x0, x1 = max(0, tx - POPUP_BAND_XTOL), min(W, tx + POPUP_BAND_XTOL)
+    y0, y1 = max(0, ty - POPUP_BAND_UP),   min(H, ty + POPUP_BAND_DOWN)
+    if x1 <= x0 or y1 <= y0:
+        return None
+    region = full_bgr[y0:y1, x0:x1]
+    hsv = cv2.cvtColor(region, cv2.COLOR_BGR2HSV)
+    m1 = cv2.inRange(hsv, np.array(POPUP_RED_LOW1), np.array(POPUP_RED_HIGH1))
+    m2 = cv2.inRange(hsv, np.array(POPUP_RED_LOW2), np.array(POPUP_RED_HIGH2))
+    mask = cv2.morphologyEx(cv2.bitwise_or(m1, m2), cv2.MORPH_CLOSE,
+                            cv2.getStructuringElement(cv2.MORPH_RECT, (9, 3)))
+    n, _, stats, cent = cv2.connectedComponentsWithStats(mask, 8)
+    # V/S тела окна берём из того же region-hsv, что и красная маска
+    reg_v = hsv[:, :, 2]
+    reg_s = hsv[:, :, 1]
+    cand_beige = []   # (cx, cy): красные прямоугольники со «светлым телом» над ними
+    cand_all = []     # (cx, cy): все подходящие по форме красные прямоугольники
+    for i in range(1, n):
+        x, y, w, h, area = stats[i]
+        if not (POPUP_BTN_W[0] <= w <= POPUP_BTN_W[1]):
+            continue
+        if not (POPUP_BTN_H[0] <= h <= POPUP_BTN_H[1]):
+            continue
+        if w / float(max(h, 1)) < POPUP_BTN_ASPECT:
+            continue
+        if area / float(max(w * h, 1)) < POPUP_BTN_FILL:
+            continue
+        cx = x0 + int(cent[i][0])
+        cy = y0 + int(cent[i][1])
+        cand_all.append((cx, cy))
+        # полоска НАД прямоугольником: у кнопки там «тело» окна, у заголовка — фон
+        sy1 = y
+        sy0 = max(0, y - POPUP_ABOVE_STRIP)
+        if sy1 > sy0:
+            strip_v = reg_v[sy0:sy1, x:x + w]
+            strip_s = reg_s[sy0:sy1, x:x + w]
+            if strip_v.size:
+                beige = float(((strip_v >= POPUP_BODY_V_MIN) &
+                               (strip_s <= POPUP_BODY_S_MAX)).sum()) / float(strip_v.size)
+                if beige >= POPUP_ABOVE_BEIGE_MIN:
+                    cand_beige.append((cx, cy))
+    # предпочитаем кнопки с «телом» над ними (не заголовок); среди них — самую нижнюю
+    pool = cand_beige if cand_beige else cand_all
+    if not pool:
+        return None
+    return max(pool, key=lambda p: p[1])
+
+
+def _find_popup_button(full_bgr):
+    """Найти нижнюю красную КНОПКУ окна (закрыть/отменить) ГДЕ УГОДНО на карте.
+    Возвращает (cx, cy, w, h) или None.
+
+    Признаки: красный ГОРИЗОНТАЛЬНЫЙ прямоугольник + светлое «тело» окна прямо НАД ним
+    + центр близко к центру карты по X (окна центрируются). Отсекает красные ники/текст
+    на карте и красный заголовок окна (над заголовком нет светлого тела)."""
+    if full_bgr is None:
+        return None
+    H, W = full_bgr.shape[:2]
+    try:
+        map_cx = MAP_REGION["left"] + MAP_REGION["width"] // 2
+        y_lo = MAP_REGION["top"] - 20
+        y_hi = MAP_REGION["top"] + MAP_REGION["height"] + 20
+    except Exception:
+        map_cx, y_lo, y_hi = W // 2, 0, H
+    hsv = cv2.cvtColor(full_bgr, cv2.COLOR_BGR2HSV)
+    m1 = cv2.inRange(hsv, np.array(POPUP_RED_LOW1), np.array(POPUP_RED_HIGH1))
+    m2 = cv2.inRange(hsv, np.array(POPUP_RED_LOW2), np.array(POPUP_RED_HIGH2))
+    mask = cv2.morphologyEx(cv2.bitwise_or(m1, m2), cv2.MORPH_CLOSE,
+                            cv2.getStructuringElement(cv2.MORPH_RECT, (9, 3)))
+    n, _, stats, cent = cv2.connectedComponentsWithStats(mask, 8)
+    vch, sch = hsv[:, :, 2], hsv[:, :, 1]
+    best, best_dx = None, 1e9
+    for i in range(1, n):
+        x, y, w, h, area = stats[i]
+        cx, cy = int(cent[i][0]), int(cent[i][1])
+        if not (y_lo <= cy <= y_hi):
+            continue
+        if not (POPUP_BTN_W[0] <= w <= POPUP_BTN_W[1]):
+            continue
+        if not (POPUP_BTN_H[0] <= h <= POPUP_BTN_H[1]):
+            continue
+        if w / float(max(h, 1)) < POPUP_BTN_ASPECT:
+            continue
+        if area / float(max(w * h, 1)) < POPUP_BTN_FILL:
+            continue
+        dx = abs(cx - map_cx)
+        if dx > POPUP_CENTER_XTOL:          # окно центрируется по горизонтали
+            continue
+        sy1, sy0 = y, max(0, y - POPUP_ABOVE_STRIP)   # светлое «тело» окна над кнопкой
+        if sy1 <= sy0:
+            continue
+        strip_v = vch[sy0:sy1, x:x + w]
+        strip_s = sch[sy0:sy1, x:x + w]
+        if not strip_v.size:
+            continue
+        beige = float(((strip_v >= POPUP_BODY_V_MIN) &
+                       (strip_s <= POPUP_BODY_S_MAX)).sum()) / float(strip_v.size)
+        if beige < POPUP_ABOVE_BEIGE_MIN:
+            continue
+        if dx < best_dx:                    # самая «центральная» кнопка — она и есть
+            best, best_dx = (cx, cy, int(w), int(h)), dx
+    return best
+
+
+def find_error_popup(full_bgr):
+    """Кнопка окна ГДЕ УГОДНО на карте (совместимость): (x, y) или None."""
+    b = _find_popup_button(full_bgr)
+    return (b[0], b[1]) if b else None
+
+
+def _find_title_above(full_bgr, cx, button_top):
+    """Найти нижнюю границу красного ЗАГОЛОВКА окна над кнопкой. Возвращает y низа
+    заголовка или None. Заголовок — широкий красный горизонтальный прямоугольник,
+    отцентрованный примерно по X кнопки, чуть выше неё."""
+    hsv = cv2.cvtColor(full_bgr, cv2.COLOR_BGR2HSV)
+    m1 = cv2.inRange(hsv, np.array(POPUP_RED_LOW1), np.array(POPUP_RED_HIGH1))
+    m2 = cv2.inRange(hsv, np.array(POPUP_RED_LOW2), np.array(POPUP_RED_HIGH2))
+    mask = cv2.morphologyEx(cv2.bitwise_or(m1, m2), cv2.MORPH_CLOSE,
+                            cv2.getStructuringElement(cv2.MORPH_RECT, (9, 3)))
+    n, _, stats, cent = cv2.connectedComponentsWithStats(mask, 8)
+    best_bottom = None
+    for i in range(1, n):
+        x, y, w, h, area = stats[i]
+        tcx, tcy = int(cent[i][0]), int(cent[i][1])
+        if w < POPUP_TITLE_MINW:                       # заголовок широкий
+            continue
+        if abs(tcx - cx) > POPUP_CENTER_XTOL:          # по центру над кнопкой
+            continue
+        bottom = y + h
+        if not (button_top - POPUP_TITLE_MAXGAP <= bottom <= button_top - POPUP_TITLE_MINGAP):
+            continue
+        if best_bottom is None or bottom > best_bottom:  # ближайший над кнопкой
+            best_bottom = bottom
+    return best_bottom
+
+
+def _green_bar_in_region(full_bgr, x0, y0, x1, y1):
+    """Есть ли внутри прямоугольника НАСТОЯЩАЯ зелёная полоса прогресса «Добыча»?
+
+    Полосу отличаем от травы по «бежевому боку»: у настоящей полосы прямо НАД или ПОД
+    ней — светлое бежевое тело окна (у травы вокруг снова трава, бежевого 0%). Хватает
+    бежевого хотя бы с одной стороны — так настоящую полосу не теряем (не отменяем
+    добычу), а траву отсекаем."""
+    H, W = full_bgr.shape[:2]
+    x0, y0 = max(0, int(x0)), max(0, int(y0))
+    x1, y1 = min(W, int(x1)), min(H, int(y1))
+    if x1 <= x0 or y1 <= y0:
+        return False
+    region = full_bgr[y0:y1, x0:x1]
+    hsv = cv2.cvtColor(region, cv2.COLOR_BGR2HSV)
+    vch, sch = hsv[:, :, 2], hsv[:, :, 1]
+    rh, rw = region.shape[:2]
+    mask = cv2.inRange(hsv, np.array(PROGRESS_GREEN_LOW), np.array(PROGRESS_GREEN_HIGH))
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE,
+                            cv2.getStructuringElement(cv2.MORPH_RECT, (15, 3)))
+    n, _, stats, _ = cv2.connectedComponentsWithStats(mask, 8)
+
+    def _beige(yy0, yy1, xx0, xx1):
+        yy0, yy1 = max(0, yy0), min(rh, yy1)
+        xx0, xx1 = max(0, xx0), min(rw, xx1)
+        if yy1 <= yy0 or xx1 <= xx0:
+            return 0.0
+        v = vch[yy0:yy1, xx0:xx1]
+        s = sch[yy0:yy1, xx0:xx1]
+        return float(((v >= POPUP_BODY_V_MIN) & (s <= POPUP_BODY_S_MAX)).sum()) / float(v.size)
+
+    for i in range(1, n):
+        x, y, ww, hh, area = stats[i]
+        if not (PROGRESS_BAR_W[0] <= ww <= PROGRESS_BAR_W[1]):
+            continue
+        if not (PROGRESS_BAR_H[0] <= hh <= PROGRESS_BAR_H[1]):
+            continue
+        if ww / float(max(hh, 1)) < PROGRESS_BAR_ASPECT:
+            continue
+        if area / float(max(ww * hh, 1)) < PROGRESS_BAR_FILL:
+            continue
+        above = _beige(y - PROGRESS_BEIGE_STRIP, y, x, x + ww)
+        below = _beige(y + hh, y + hh + PROGRESS_BEIGE_STRIP, x, x + ww)
+        if above >= PROGRESS_BEIGE_MIN or below >= PROGRESS_BEIGE_MIN:
+            return True
+    return False
+
+
+def _progress_bar_present(full_bgr):
+    """Идёт ли добыча? Ищем зелёную ЗАЛИВКУ полосы прогресса «Добыча», рядом с которой
+    (слева/справа) красный «остаток» отсчёта ЛИБО сверху/снизу бежевое тело окна.
+
+    Полоса добычи наполовину зелёная, наполовину красная (убывает), поэтому у зелёной
+    заливки почти всегда есть красный сосед. Трава так не выглядит: у зелёной травы
+    вокруг снова трава (ни красного «остатка», ни бежевого тела) — она отсекается.
+    Проверяем ПЕРВЫМ, чтобы никогда не отменить идущую добычу."""
+    if full_bgr is None:
+        return False
+    H, W = full_bgr.shape[:2]
+    try:
+        map_cx = MAP_REGION["left"] + MAP_REGION["width"] // 2
+        y_lo = MAP_REGION["top"] - 20
+        y_hi = MAP_REGION["top"] + MAP_REGION["height"] + 20
+    except Exception:
+        map_cx, y_lo, y_hi = W // 2, 0, H
+    hsv = cv2.cvtColor(full_bgr, cv2.COLOR_BGR2HSV)
+    gmask = cv2.inRange(hsv, np.array(PROGRESS_GREEN_LOW), np.array(PROGRESS_GREEN_HIGH))
+    gmask = cv2.morphologyEx(gmask, cv2.MORPH_CLOSE,
+                             cv2.getStructuringElement(cv2.MORPH_RECT, (9, 3)))
+    rmask = cv2.bitwise_or(
+        cv2.inRange(hsv, np.array(POPUP_RED_LOW1), np.array(POPUP_RED_HIGH1)),
+        cv2.inRange(hsv, np.array(POPUP_RED_LOW2), np.array(POPUP_RED_HIGH2)))
+    vch, sch = hsv[:, :, 2], hsv[:, :, 1]
+    n, _, stats, cent = cv2.connectedComponentsWithStats(gmask, 8)
+
+    def _frac(m, yy0, yy1, xx0, xx1):
+        yy0, yy1 = max(0, yy0), min(H, yy1)
+        xx0, xx1 = max(0, xx0), min(W, xx1)
+        if yy1 <= yy0 or xx1 <= xx0:
+            return 0.0
+        sub = m[yy0:yy1, xx0:xx1]
+        return float((sub > 0).sum()) / float(sub.size)
+
+    def _beige(yy0, yy1, xx0, xx1):
+        yy0, yy1 = max(0, yy0), min(H, yy1)
+        xx0, xx1 = max(0, xx0), min(W, xx1)
+        if yy1 <= yy0 or xx1 <= xx0:
+            return 0.0
+        v = vch[yy0:yy1, xx0:xx1]
+        s = sch[yy0:yy1, xx0:xx1]
+        return float(((v >= POPUP_BODY_V_MIN) & (s <= POPUP_BODY_S_MAX)).sum()) / float(v.size)
+
+    for i in range(1, n):
+        x, y, w, h, area = stats[i]
+        cx, cy = int(cent[i][0]), int(cent[i][1])
+        if not (PROGRESS_FILL_H[0] <= h <= PROGRESS_FILL_H[1]):
+            continue
+        if w < PROGRESS_FILL_WMIN:
+            continue
+        if w / float(max(h, 1)) < PROGRESS_FILL_ASPECT:
+            continue
+        if area / float(max(w * h, 1)) < PROGRESS_FILL_SOLID:  # плотная (не текст)
+            continue
+        if not (y_lo <= cy <= y_hi):
+            continue
+        if abs(cx - map_cx) > POPUP_CENTER_XTOL + 90:          # у центра окна
+            continue
+        red_r = _frac(rmask, y, y + h, x + w, x + w + PROGRESS_SIDE_W)   # красный справа
+        red_l = _frac(rmask, y, y + h, x - PROGRESS_SIDE_W, x)          # красный слева
+        beige_a = _beige(y - PROGRESS_BEIGE_STRIP, y, x, x + w)         # бежевое сверху
+        beige_b = _beige(y + h, y + h + PROGRESS_BEIGE_STRIP, x, x + w) # бежевое снизу
+        if (max(red_r, red_l) >= PROGRESS_RED_ADJ_MIN or
+                beige_a >= PROGRESS_BEIGE_MIN or beige_b >= PROGRESS_BEIGE_MIN):
+            return True
+    return False
+
+
+def classify_center_window(full_bgr):
+    """Классифицировать центральное окно. Возвращает (kind, point): 'none' (окна нет),
+    'progress' (идёт добыча) или 'error' (окно-ошибка с «закрыть»). point — центр кнопки.
+
+    ВАЖЕН ПОРЯДОК: сперва проверяем полосу прогресса (чтобы НИКОГДА не отменить идущую
+    добычу), и только если её нет — ищем красную кнопку окна-ошибки."""
+    if _progress_bar_present(full_bgr):
+        return "progress", None
+    b = _find_popup_button(full_bgr)
+    if b is None:
+        return "none", None
+    cx, cy, w, h = b
+    return "error", (cx, cy)
+
+
+def _find_open_error_close(page):
+    """Если сейчас открыто окно-ОШИБКА (без зелёной полосы прогресса «Добыча») —
+    вернуть точку кнопки «закрыть», по которой надо кликнуть. Иначе None.
+
+    Порядок: 1) идёт добыча (зелёная полоса) → это НЕ ошибка, вернём None (иначе
+    отменим добычу); 2) ищем красную кнопку в полосе вокруг калиброванной точки;
+    3) если в полосе не нашли, но прямо в калиброванной точке красно — кликнем её;
+    4) точка не откалибрована → запасная геометрия (если включена)."""
+    try:
+        full = screenshot_bgr(page)
+    except Exception:
+        return None
+    # ГЛАВНОЕ: тип окна определяем по КНОПКЕ окна, а зелёную полосу прогресса ищем
+    # только ВНУТРИ тела окна — поэтому трава на карте больше не выдаётся за «добычу».
+    kind, pt = classify_center_window(full)
+    if kind == "progress":
+        return None          # идёт добыча — не трогаем (иначе отменим)
+    if kind == "error" and pt is not None:
+        return pt
+    # запас: кнопка «закрыть» в полосе вокруг калиброванной точки
+    target = get_close_target()
+    if target is not None:
+        pt = find_close_button_near(full, target)
+        if pt is not None and not _green_bar_in_region(
+                full, pt[0] - POPUP_BODY_HALF_W, pt[1] - POPUP_BODY_UP,
+                pt[0] + POPUP_BODY_HALF_W, pt[1]):
+            return pt
+        if _red_fraction_at(full, target[0], target[1]) >= POPUP_RED_FRAC:
+            return tuple(int(v) for v in target)
+    if target is None and POPUP_USE_GEOMETRY:
+        return find_popup_close(full)
+    return None
+
+
 def find_popup_close(full_bgr):
     rects = _red_rects(full_bgr)
     titles = [r for r in rects if POPUP_TITLE_W[0] <= r[2] <= POPUP_TITLE_W[1]]
@@ -1122,63 +1487,78 @@ def progress_bar_present(full_bgr):
 
 def window_kind(page):
     """Что сейчас в центре: 'progress' (идёт добыча), 'error' (окно с «закрыть»),
-    'none' (окна нет) или 'unknown' (нельзя определить)."""
+    'none' (окна нет) или 'unknown' (нельзя определить).
+
+    Тип окна определяем по КНОПКЕ окна, а зелёную полосу прогресса ищем ТОЛЬКО внутри
+    тела окна — трава на карте больше не выдаётся за «добычу» (это и была причина, по
+    которой бот не закрывал окна-ошибки на травяных локациях)."""
     try:
         full = screenshot_bgr(page)
     except Exception:
         return "unknown"
-    # 1) полоса прогресса → идёт добыча (проверяем ПЕРВЫМ, чтобы не отменить)
-    if progress_bar_present(full):
-        return "progress"
-    # 2) красная кнопка в откалиброванной точке без полосы → окно-ошибка
+    kind, _ = classify_center_window(full)
+    if kind != "none":
+        return kind
+    # запас: кнопка в полосе вокруг калиброванной точки (если центр-эвристика не сошлась)
     target = get_close_target()
-    if target is not None and _red_fraction_at(full, target[0], target[1]) >= POPUP_RED_FRAC:
+    if target is not None:
+        if find_close_button_near(full, target) is not None:
+            if _green_bar_in_region(full, target[0] - POPUP_BODY_HALF_W,
+                                    target[1] - POPUP_BODY_UP,
+                                    target[0] + POPUP_BODY_HALF_W, target[1]):
+                return "progress"
+            return "error"
+        if _red_fraction_at(full, target[0], target[1]) >= POPUP_RED_FRAC:
+            return "error"
+    if target is None and POPUP_USE_GEOMETRY and find_popup_close(full) is not None:
         return "error"
     return "none"
 
 
-def close_if_blocking(page):
-    """Закрыть ТОЛЬКО окно-ошибку (с «закрыть»). Окно добычи (с полосой) не трогаем."""
-    if window_kind(page) == "error":
-        target = get_close_target()
-        if target:
-            click_point(page, target)
-            log.info("Закрыл окно-ошибку («закрыть» по калибровке).")
-            time.sleep(random.uniform(0.3, 0.6))
+def _click_close_verified(page, first_pt):
+    """Кликнуть по кнопке «закрыть» и ПРОВЕРИТЬ, что окно исчезло. Если нет —
+    повторить (окна разной высоты: могло вылезти следующее или клик чуть промахнулся;
+    каждый раз ищем кнопку заново). Возвращает True, если попытка была сделана."""
+    pt = first_pt
+    for _ in range(max(1, POPUP_CLOSE_TRIES)):
+        click_point(page, pt)
+        log.info("Закрыл окно-ошибку (кнопка «закрыть» %s).",
+                 tuple(int(v) for v in pt))
+        time.sleep(random.uniform(0.35, 0.6))
+        nxt = _find_open_error_close(page)   # окно ещё висит? уточним точку
+        if nxt is None:
             return True
-    return False
+        pt = nxt
+    # калиброванным путём не закрылось — последняя попытка через DOM
+    if _close_via_dom(page):
+        return True
+    log.warning("Окно-ошибку не удалось закрыть за %d попыт(ки). Проверь калибровку "
+                "точки «закрыть» (python omela_bg.py --calib, этап 3).", POPUP_CLOSE_TRIES)
+    return True
+
+
+def close_if_blocking(page):
+    """Закрыть ТОЛЬКО окно-ошибку (с «закрыть»). Окно добычи (с зелёной полосой) не
+    трогаем. Кнопку ищем в ПОЛОСЕ вокруг калиброванной точки, кликаем по её
+    фактическому центру и проверяем, что окно закрылось."""
+    pt = _find_open_error_close(page)
+    if pt is None:
+        return False
+    return _click_close_verified(page, pt)
 
 
 def close_blocking_popup(page):
-    """Закрыть окно-ошибку. Главное — по откалиброванной точке «закрыть», и только
-    если она сейчас красная (окно открыто) — иначе НИКОГДА не кликаем (не мешаем сбору).
-    """
-    target = get_close_target()
-    if target is not None:
-        try:
-            full = screenshot_bgr(page)
-        except Exception:
-            full = None
-        if full is not None and _red_fraction_at(full, target[0], target[1]) >= POPUP_RED_FRAC:
-            click_point(page, target)
-            log.info("Закрыл окно (кнопка «закрыть» по калибровке).")
-            time.sleep(random.uniform(0.3, 0.6))
-            return True
-        # точка задана, но не красная → окна нет, ничего не жмём
-        return False
-
-    # точка «закрыть» не откалибрована
-    if POPUP_USE_GEOMETRY:
-        try:
-            pt = find_popup_close(screenshot_bgr(page))
-        except Exception:
-            pt = None
-        if pt:
-            click_point(page, pt)
-            log.info("Закрыл окно «закрыть» по картинке.")
-            time.sleep(random.uniform(0.3, 0.6))
-            return True
-    return _close_via_dom(page)
+    """Закрыть окно-ошибку. Кнопку «закрыть» ищем в ПОЛОСЕ вокруг калиброванной
+    точки (окна разной высоты сдвигают кнопку по вертикали), кликаем по её
+    фактическому центру и ПРОВЕРЯЕМ, что окно исчезло; если нет — повторяем. Окно
+    добычи (с зелёной полосой прогресса) не трогаем."""
+    pt = _find_open_error_close(page)
+    if pt is not None:
+        return _click_close_verified(page, pt)
+    # точка «закрыть» не откалибрована и геометрия выключена — последний шанс через DOM
+    if get_close_target() is None and not POPUP_USE_GEOMETRY:
+        return _close_via_dom(page)
+    return False
 
 
 # --- ЧЁРНЫЙ СПИСОК и КУЛДАУН ПОВТОРНОГО КЛИКА -----------------------------
@@ -2388,8 +2768,8 @@ def gather_visible(page, scroll_pos, total):
                     time.sleep(GATHER_POLL)
                     waited += GATHER_POLL
                     continue
-                if get_close_target():
-                    click_point(page, get_close_target())
+                # надёжно закрываем: ищем кнопку в полосе и проверяем закрытие
+                close_blocking_popup(page)
                 total -= 1
                 if SKIP_FAILED_ENABLED:
                     _fp_add(scroll_pos, px, py, time.time())
